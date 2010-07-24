@@ -7,6 +7,7 @@
 #' CHECK.
 #'
 #' @param package package name (without quotes)
+#' @export
 #' @examples
 #' library_if_available(testthat)
 #' library_if_available(packagethatdoesntexist)
@@ -14,6 +15,7 @@ library_if_available <- function(package) {
   package <- deparse(substitute(package))
   
   suppressWarnings(suppressPackageStartupMessages(
-    require(package, quietly = TRUE, warn.conflicts = FALSE)
+    require(package, quietly = TRUE, 
+      warn.conflicts = FALSE, character.only = TRUE)
   ))
 }

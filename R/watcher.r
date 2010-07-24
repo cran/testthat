@@ -14,6 +14,7 @@
 #'   TRUE to keep watching, or FALSE to stop. 
 #' @param hash hashes are more accurate at detecting changes, but are slower
 #'   for large files.  When FALSE, uses modification time stamps 
+#' @export
 watch <- function(path, callback, pattern = NULL, hash = TRUE) {
   
   prev <- dir_state(path, pattern, hash = hash)
@@ -22,7 +23,7 @@ watch <- function(path, callback, pattern = NULL, hash = TRUE) {
     Sys.sleep(1)
     
     curr <- dir_state(path, pattern, hash = hash)
-    changes <- compare_state(curr, prev)
+    changes <- compare_state(prev, curr)
     
     if (changes$n > 0) {
       # cat("C")

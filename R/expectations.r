@@ -4,6 +4,7 @@
 #'
 #' @param class character vector of class names
 #' @seealso \code{\link{inherits}}
+#' @export
 #' @examples
 #' expect_that(1, is_a("numeric"))
 #' a <- matrix(1:10, nrow = 5)
@@ -30,6 +31,7 @@ is_a <- function(class) {
 #' a less informative error message.
 #'
 #' @seealso \code{\link{is_false}} for complement
+#' @export
 #' @examples
 #' expect_that(2 == 2, is_true())
 #' # Failed expectations will throw an error
@@ -57,6 +59,7 @@ is_true <- function() {
 #' 
 #' A useful fall-back expectation like \code{\link{is_true}}
 #' 
+#' @export
 #' @examples
 #' expect_that(3 == 2, is_false())
 #'
@@ -77,6 +80,7 @@ is_false <- function() {
 # 
 #' @param expected expected value
 #' @param ... other values passed to \code{\link{all.equal}}
+#' @export
 #' @examples
 #' a <- 10
 #' expect_that(a, equals(10))
@@ -91,20 +95,35 @@ is_false <- function() {
 #' expect_that(sqrt(2) ^ 2, is_identical_to(2))
 #' }
 equals <- function(expected, ...) {
-  name <- deparse(substitute(expected))
+  name <- paste(deparse(substitute(object), width = 500), collapse = "\n")
   function(actual) {
+    same <- all.equal(expected, actual, ...)
     expectation(
-      identical(all.equal(expected, actual, ...), TRUE),
-      paste("not equal to ", name, sep = "")
+      identical(same, TRUE),
+      str_c("not equal to ", name, "\n", str_c(same, collapse = "\n"))
     )
   }
 }
+
+#' Expectation: is the object equivalent to a value?
+#' This expectation tests for equivalency: are two objects equal once their
+#' attributes have been removed.
+#' 
+#' @param expected expected value
+#' @export
+is_equivalent_to <- function(expected) {
+  function(actual) {
+    equals(expected, check.attributes = FALSE)(actual)
+  } 
+}
+
 
 #' Expectation: is the object identical to another?
 #'
 #' Comparison performed using \code{\link{identical}}.
 #' 
 #' @param expected expected value
+#' @export
 #' @examples
 #' a <- letters[1:3]
 #' expect_that(a, is_identical_to(c("a", "b", "c")))
@@ -114,7 +133,7 @@ equals <- function(expected, ...) {
 #' expect_that(sqrt(2) ^ 2, is_identical_to(2))
 #' }
 is_identical_to <- function(expected) {
-  name <- deparse(substitute(expected))
+  name <- paste(deparse(substitute(object), width = 500), collapse = "\n")
   function(actual) {
     expectation(
       identical(actual, expected),
@@ -131,6 +150,7 @@ is_identical_to <- function(expected) {
 #'
 #' @param regexp regular expression to test against
 #' @param ... other arguments passed to \code{\link{grepl}}
+#' @export
 #' @examples 
 #' expect_that("Testing is fun", matches("fun"))
 #' expect_that("Testing is fun", matches("f.n"))
@@ -147,6 +167,7 @@ matches <- function(regexp, ...) {
 #' 
 #' @param regexp regular expression to test against
 #' @param ... other arguments passed to \code{\link{grepl}}
+#' @export
 #' @examples 
 #' str(mtcars)
 #' expect_that(str(mtcars), prints_text("32 obs"))
@@ -160,9 +181,9 @@ prints_text <- function(regexp, ...) {
 
 #' Expectation: does expression throw an error?
 #' 
-#' 
 #' @param regexp optional regular expression to match. If not specified, just
 #'   asserts that expression throws some error.
+#' @export
 #' @examples
 #' expect_that(log("a"), throws_error())
 #' expect_that(log("a"), throws_error("Non-numeric argument"))
@@ -181,6 +202,7 @@ throws_error <- function(regexp = NULL) {
 #' 
 #' This is useful for performance regression testing.
 #' 
+#' @export
 #' @param amount maximum duration in seconds
 takes_less_than <- function(amount) {
   function(expr) {
