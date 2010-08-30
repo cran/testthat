@@ -17,7 +17,7 @@
   global state.
 
   When run from the command line, tests return \code{NULL} if all
-  expectations are met, otherwise it returns
+  expectations are met, otherwise it raises an error.
 }
 \arguments{
   \item{desc}{test name.  Names should be kept as brief as possible, as they
@@ -31,7 +31,7 @@ expect_that(tan(pi / 4), equals(1))
 })
 # Failing test:
 \dontrun{
-test_that("trigonometric functions match identies", {
+test_that("trigonometric functions match identities", {
 expect_that(sin(pi / 4), equals(1))
 })
 }}

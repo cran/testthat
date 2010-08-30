@@ -14,6 +14,8 @@
 #'  \item \code{\link{matches}}: string matching
 #'  \item \code{\link{prints_text}}: output matching
 #'  \item \code{\link{throws_error}}: error matching
+#'  \item \code{\link{gives_warning}}: warning matching
+#'  \item \code{\link{shows_message}}: message matching
 #'  \item \code{\link{takes_less_than}}: performance
 #' }
 #'
@@ -23,22 +25,26 @@
 #' @param object object to test
 #' @param condition, a function that returns whether or not the condition
 #'   is met, and if not, an error message to display.
+#' @param label object label. When \code{NULL}, computed from deparsed object.
 #' @param info extra information to be included in the message (useful when
-#'   writing tests in loops)
+#'   writing tests in loops).
 #' @export
+#' @import stringr
 #' @examples
 #' expect_that(5 * 2, equals(10))
 #' expect_that(sqrt(2) ^ 2, equals(2))
 #' \dontrun{
 #' expect_that(sqrt(2) ^ 2, is_identical_to(2))
 #' }
-expect_that <- function(object, condition, info = NULL) {
-  name <- paste(deparse(substitute(object), width = 500), collapse = "\n")
+expect_that <- function(object, condition, info = NULL, label = NULL) {
+  if (is.null(label)) {
+    label <- find_expr("object")
+  }
   results <- condition(object)
   
-  results$message <- paste(name, results$message)
+  results$message <- str_c(label, " ", results$message)
   if (!is.null(info)) {
-    results$message <- paste(results$message, "\n", info, sep = "")
+    results$message <- str_c(results$message, "\n", info)
   }
   
   test_reporter()$add_result(results)

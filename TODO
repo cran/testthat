@@ -1,1 +1,4 @@
-Ensure that test files are sourced independently into their own environments. A test should not be able to rely on objects created by another test.
+* Other side effects:
+  * set graphics device?
+  * switch into temporary directory
+  * capture output to screen
