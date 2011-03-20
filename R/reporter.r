@@ -9,8 +9,10 @@ NULL
 
 Reporter$do({
   self$context <- ""
-  self$test <- NULL
+  self$test <- ""
   self$failed <- FALSE
+  
+  self$context_open <- FALSE
     
   self$start_reporter <- function() {
     self$failed <- FALSE
@@ -23,9 +25,8 @@ Reporter$do({
   }
   self$add_result <- function(result) {}
   self$end_test <- function() {
-    self$test <- NULL
+    self$test <- ""
   }
   self$end_context <- function() {}
   self$end_reporter <- function() {}
 })
-

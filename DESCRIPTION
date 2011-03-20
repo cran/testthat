@@ -1,7 +1,7 @@
 Package: testthat
 Type: Package
 Title: Testthat code.  Tools to make testing fun :)
-Version: 0.3
+Version: 0.4
 Author: Hadley Wickham <h.wickham@gmail.com>
 Maintainer: Hadley Wickham <h.wickham@gmail.com>
 Description: A testing package specifically tailored for R that's fun,
@@ -16,6 +16,6 @@ Collate: 'aaa-classes.r' 'auto-test.r' 'colour-text.r' 'context.r'
         'reporter-minimal.r' 'reporter-stop.r' 'reporter-summary.r'
         'reporter-zzz.r' 'reporter.r' 'test-files.r' 'test-package.r'
         'test-that.r' 'utils.r' 'watcher.r'
-Packaged: 2010-08-30 13:55:28 UTC; hadley
+Packaged: 2011-03-20 15:11:05 UTC; hadley
 Repository: CRAN
-Date/Publication: 2010-08-31 06:13:00
+Date/Publication: 2011-03-20 19:39:13
