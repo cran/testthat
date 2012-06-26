@@ -33,6 +33,8 @@
 #' @keywords debugging
 auto_test <- function(code_path, test_path, reporter = "summary", env = NULL) {
   reporter <- find_reporter(reporter)
+  code_path <- normalizePath(code_path)
+  test_path <- normalizePath(test_path)
 
   # Start by loading all code and running all tests
   if (is.null(env)) {
@@ -47,7 +49,7 @@ auto_test <- function(code_path, test_path, reporter = "summary", env = NULL) {
   
   # Next set up watcher to monitor changes
   watcher <- function(added, deleted, modified) {
-    changed <- c(added, modified)
+    changed <- normalizePath(c(added, modified))
     
     tests <- changed[starts_with(changed, test_path)]
     code <- changed[starts_with(changed, code_path)] 
@@ -61,7 +63,7 @@ auto_test <- function(code_path, test_path, reporter = "summary", env = NULL) {
     } else if (length(tests) > 0) {
       # If test changes, rerun just that test
       cat("Rerunning tests: ", str_c(basename(tests), collapse = ", "), "\n")      
-      with_reporter(reporter$new(), lapply(tests, sys.source, 
+      with_reporter(reporter$getRefClass()$new(), lapply(tests, sys.source, 
         env = new.env(parent = env), chdir = TRUE))
     }
     

@@ -136,6 +136,18 @@ expect_false <- function(object, info = NULL, label = NULL) {
 #' expect_that(sqrt(2) ^ 2 == 2, is_true())
 #' expect_that(sqrt(2) ^ 2, is_identical_to(2))
 #' }
+#'
+#' # You can pass on additional arguments to all.equal:
+#' \dontrun{
+#' # Test the ABSOLUTE difference is within .002
+#' expect_equal(object = 10.01, expected = 10, tolerance = .002, 
+#'   scale = 1)
+#'
+#' # Test the RELATIVE difference is within .002
+#' expectedValue <- 10
+#' expect_equal(object = 10.01, expected = expectedValue, tolerance = 0.002,
+#'   scale = expectedValue)
+#' }
 equals <- function(expected, label = NULL, ...) {
   if (is.null(label)) {
     label <- find_expr("expected")
@@ -373,8 +385,8 @@ expect_error <- function(object, regexp = NULL, info = NULL, label = NULL) {
 gives_warning <- function(regexp = NULL) {
   function(expr) {
     res <- evaluate(substitute(expr), parent.frame())
-    warnings <- sapply(Filter(is.warning, res), "[[", "message")
-    if (!is.null(regexp)) {
+    warnings <- vapply(Filter(is.warning, res), "[[", "message", FUN.VALUE=character(1))
+    if (!is.null(regexp) && length(warnings) > 0) {
       matches(regexp, all = FALSE)(warnings)
     } else {
       expectation(
@@ -410,13 +422,13 @@ expect_warning <- function(object, regexp = NULL, info = NULL,
 shows_message <- function(regexp = NULL) {
   function(expr) {
     res <- evaluate(substitute(expr), parent.frame())
-    warnings <- sapply(Filter(is.message, res), "[[", "message")
-    if (!is.null(regexp)) {
-      matches(regexp, all = FALSE)(warnings)
+    messages <- vapply(Filter(is.message, res), "[[", "message", FUN.VALUE=character(1))
+    if (!is.null(regexp) && length(messages) > 0) {
+      matches(regexp, all = FALSE)(messages)
     } else {
       expectation(
-        length(warnings) > 0,
-        "no warnings given"
+        length(messages) > 0,
+        "no messages shown"
       )
     }
   }

@@ -4,6 +4,8 @@
 #' methods.
 #'
 #' @keywords internal.
+#' @aliases Reporter-class
+#' @exportClass Reporter
 Reporter <- setRefClass("Reporter", 
   fields = list(
     context = "character", 
@@ -11,12 +13,12 @@ Reporter <- setRefClass("Reporter",
     failed = "logical", 
     context_open = "logical"
   ), methods = list(
-    initialize = function() {
+    initialize = function(...) {
       context_open <<- FALSE
       failed <<- FALSE
       test <<- NULL
       
-      .self
+      initFields(...)
     },
     start_reporter = function() {
       failed <<- FALSE
