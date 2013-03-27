@@ -1,6 +1,6 @@
 #' Expect that a condition holds.
-#' 
-#' An expectation checks whether a single condition holds true.  
+#'
+#' An expectation checks whether a single condition holds true.
 #' \pkg{testthat} currently provides the following expectations.  See their
 #' documentation for more details
 #'
@@ -30,6 +30,7 @@
 #'   writing tests in loops).
 #' @export
 #' @import stringr
+#' @seealso \code{\link{fail}} for an expectation that always fails.
 #' @examples
 #' expect_that(5 * 2, equals(10))
 #' expect_that(sqrt(2) ^ 2, equals(2))
@@ -41,13 +42,29 @@ expect_that <- function(object, condition, info = NULL, label = NULL) {
     label <- find_expr("object")
   }
   results <- condition(object)
-  
+
   results$message <- str_c(label, " ", results$message)
   if (!is.null(info)) {
     results$message <- str_c(results$message, "\n", info)
   }
-  
+
   test_reporter()$add_result(results)
   invisible()
 }
 
+#' A default expectation that always fails.
+#'
+#' The fail function forces a test to fail.  This is useful if you want to
+#' test a pre-condition '
+#'
+#' @param message a string to display.
+#' @export
+#' @examples
+#' \dontrun{
+#' test_that("this test fails", fail())
+#' }
+fail <- function(message = "Failure has been forced.") {
+  results <- expectation(FALSE, message)
+  test_reporter()$add_result(results)
+  invisible()
+}
