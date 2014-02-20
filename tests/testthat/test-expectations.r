@@ -55,11 +55,34 @@ test_that("messages are caught by shows_message", {
   expect_that(f(), shows_message("a"))
   expect_that(g(), shows_message("a"))
   expect_that(g(), shows_message("b"))
-
 })
 
 test_that("shows_mesage / gives_warning work when no messages are generated", {
-  expect_that(gives_warning("a")(1)$message, is_identical_to("no warnings given"))
-  expect_that(shows_message("a")(1)$message, is_identical_to("no messages shown"))
+  expect_identical(gives_warning("a")(1)$failure_msg, "no warnings given")
+  expect_identical(shows_message("a")(1)$failure_msg, "no messages shown")
 })
 
+test_that("expect_output captures multiline code", {
+  expect_output(cat("1\n2"), "1\n2")
+})
+
+test_that("expect_output prints by default", {
+  expect_output(1, "1")
+})
+
+
+test_that("extra arguments to matches passed onto grepl", {
+  expect_match("te*st", "e*", fixed = TRUE)
+  expect_match("test", "TEST", ignore.case = TRUE)
+
+  expect_that("te*st", matches("e*", fixed = TRUE))
+  expect_that("test", matches("TEST", ignore.case = TRUE))
+
+})
+
+test_that("for messages, warnings, errors and output, ... passed onto grepl", {
+  expect_output(print("X"), "x", ignore.case = TRUE)
+  expect_message(message("X"), "x", ignore.case = TRUE)
+  expect_warning(warning("X"), "x", ignore.case = TRUE)
+  expect_error(stop("X"), "x", ignore.case = TRUE)
+})

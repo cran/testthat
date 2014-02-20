@@ -1,23 +1,26 @@
 Package: testthat
 Type: Package
 Title: Testthat code.  Tools to make testing fun :)
-Version: 0.7.1
+Version: 0.8
 Author: Hadley Wickham <h.wickham@gmail.com>
 Maintainer: Hadley Wickham <h.wickham@gmail.com>
-Description: A testing package specifically tailored for R that's fun,
-        flexible and easy to set up.
+Description: A testing package specifically tailored for R
+    that's fun, flexible and easy to set up.
 URL: http://had.co.nz/
-Depends: R (>= 2.12.0), methods
-Imports: digest, stringr (>= 0.4), evaluate (>= 0.4.3)
-License: GPL
+Depends: R (>= 2.15.0)
+Imports: digest, methods
+License: MIT + file LICENSE
 LazyData: true
-Collate: 'auto-test.r' 'colour-text.r' 'context.r' 'expect-that.r'
-        'expectation.r' 'expectations.r' 'library.r' 'reporter.r'
-        'reporter-minimal.r' 'reporter-stop.r' 'reporter-summary.r'
-        'reporter-tap.r' 'reporter-zzz.r' 'test-files.r'
-        'test-package.r' 'test-that.r' 'utils.r' 'watcher.r'
-        'make-expectation.r'
-Packaged: 2013-03-27 13:05:52 UTC; hadley
+Roxygen: list(wrap = FALSE)
+Collate: 'auto-test.r' 'colour-text.r' 'compare.r' 'context.r'
+        'evaluate-promise.r' 'expect-that.r' 'expectation.r'
+        'expectations.r' 'library.r' 'make-expectation.r' 'reporter.r'
+        'reporter-list.r' 'reporter-minimal.r' 'reporter-multi.r'
+        'reporter-silent.r' 'reporter-stop.r' 'reporter-summary.r'
+        'reporter-tap.r' 'reporter-teamcity.r' 'reporter-zzz.r'
+        'test-files.r' 'test-package.r' 'test-that.r' 'traceback.r'
+        'utils.r' 'watcher.r'
+Packaged: 2014-02-20 16:34:56 UTC; hadley
 NeedsCompilation: no
 Repository: CRAN
-Date/Publication: 2013-03-27 16:57:40
+Date/Publication: 2014-02-20 20:55:37

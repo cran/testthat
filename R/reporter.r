@@ -4,8 +4,11 @@
 #' methods.
 #'
 #' @keywords internal.
-#' @aliases Reporter-class
-#' @exportClass Reporter
+#' @export
+#' @export Reporter
+#' @aliases Reporter
+#' @param ... Arguments used to initialise class
+#' @importFrom methods setRefClass
 Reporter <- setRefClass("Reporter",
   fields = list(
     context = "character",
