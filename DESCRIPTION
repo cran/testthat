@@ -1,5 +1,5 @@
 Package: testthat
-Version: 0.9
+Version: 0.9.1
 Title: Testthat code. Tools to make testing fun :)
 Description: A testing package specifically tailored for R
     that's fun, flexible and easy to set up.
@@ -8,7 +8,7 @@ Authors@R: as.person(c(
     "RStudio [cph]"))
 URL: https://github.com/hadley/testthat
 BugReports: https://github.com/hadley/testthat/issues
-Depends: R (>= 2.15.0), methods
+Depends: R (>= 3.1.0), methods
 Imports: digest
 Suggests: devtools
 License: MIT + file LICENSE
@@ -21,10 +21,10 @@ Collate: 'auto-test.r' 'colour-text.r' 'compare.r' 'context.r'
         'reporter-teamcity.r' 'reporter-zzz.r' 'test-files.r'
         'test-package.r' 'test-that.r' 'traceback.r' 'utils.r'
         'watcher.r'
-Packaged: 2014-09-22 16:43:09 UTC; hadley
+Packaged: 2014-09-29 19:17:50 UTC; hadley
 Author: Hadley Wickham [aut, cre],
   RStudio [cph]
 Maintainer: Hadley Wickham <hadley@rstudio.com>
 NeedsCompilation: yes
 Repository: CRAN
-Date/Publication: 2014-09-22 23:05:55
+Date/Publication: 2014-10-01 19:16:27
