@@ -1,6 +1,7 @@
 # testthat
 
-[![Build Status](https://travis-ci.org/hadley/testthat.png?branch=master)](https://travis-ci.org/hadley/testthat)
+[![Travis-CI Build Status](https://travis-ci.org/hadley/testthat.png?branch=master)](https://travis-ci.org/hadley/testthat) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/hadley/testthat?branch=master)](https://ci.appveyor.com/project/hadley/testthat)
+[![Coverage Status](https://img.shields.io/coveralls/hadley/testthat.svg)](https://coveralls.io/r/hadley/testthat?branch=master)
 
 Testing your code is normally painful and boring. `testthat` tries to make testing as fun as possible, so that you get a visceral satisfaction from writing tests. Testing should be fun, not a drag, so you do it all the time. To make that happen, `testthat`:
 
@@ -13,9 +14,9 @@ Testing your code is normally painful and boring. `testthat` tries to make testi
 * Can re-run tests automatically as you change your code or tests.
 
 * Displays test progress visually, showing a pass, fail or error for every
-  expectation. If you're using the terminal, it'll even colour the output. 
-    
-`testthat` draws inspiration from the xUnit family of testing packages, as well from many of the innovative ruby testing libraries, like [rspec](http://rspec.info/), [testy](http://github.com/ahoward/testy), [bacon](http://github.com/chneukirchen/bacon) and [cucumber](http://wiki.github.com/aslakhellesoy/cucumber/). I have used what I think works for R, and abandoned what doesn't, creating a testing environment that is philosophically centred in R. 
+  expectation. If you're using the terminal, it'll even colour the output.
+
+`testthat` draws inspiration from the xUnit family of testing packages, as well from many of the innovative ruby testing libraries, like [rspec](http://rspec.info/), [testy](https://github.com/ahoward/testy), [bacon](https://github.com/chneukirchen/bacon) and [cucumber](https://cucumber.io). I have used what I think works for R, and abandoned what doesn't, creating a testing environment that is philosophically centred in R.
 
 Instructions for using this package can be found in the [Testing](http://r-pkgs.had.co.nz/tests.html) chapter of my forthcoming book [R packages](http://r-pkgs.had.co.nz/).
 
@@ -33,6 +34,8 @@ Now, recommended practice is to put your tests in `tests/testthat`, and ensure `
 
 ```R
 library(testthat)
+library(yourpackage)
+
 test_check("yourpackage")
 ```
 

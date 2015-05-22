@@ -21,20 +21,20 @@ with_top_env <- function(env, code) {
 #'
 #' @section R CMD check:
 #' Use \code{test_package} to test an installed package, or in
-#' \code{tests/test-all.R}if you're using the older \code{inst/tests}
+#' \code{tests/test-all.R} if you're using the older \code{inst/tests}
 #' convention.
 #'
 #' If your tests live in \code{tests/testthat} (preferred) use \code{test_check}
 #' in \code{tests/testthat.R}.  You still use \code{test_package} when testing
 #' the installed package.
 #'
-#' @param package package name
+#' @param package   package name
 #' @inheritParams test_dir
-#' @return a data frame of the summary of test results
+#' @return the results as a "testthat_results" (list)
 #' @export
 #' @examples
 #' \dontrun{test_package("testthat")}
-test_package <- function(package, filter = NULL, reporter = "summary") {
+test_package <- function(package, filter = NULL, reporter = "summary", ...) {
   # Ensure that test package returns silently if called recursively - this
   # will occur if test-all.R ends up in the same directory as all the other
   # tests.
@@ -49,22 +49,29 @@ test_package <- function(package, filter = NULL, reporter = "summary") {
   test_path2 <- file.path(test_path, "testthat")
   if (file.exists(test_path2)) test_path <- test_path2
 
-  reporter <- find_reporter(reporter)
-
-  env <- test_pkg_env(package)
-  with_top_env(env, {
-    df <- test_dir(test_path, reporter = reporter, env = env, filter = filter)
-  })
-
-  if (reporter$failed) {
-    stop("Test failures", call. = FALSE)
-  }
-  invisible(df)
+  run_tests(package, test_path, filter, reporter, ...)
 }
 
+
+run_tests <- function(package, test_path, filter, reporter, ...)
+{
+  reporter <- find_reporter(reporter)
+  env <- test_pkg_env(package)
+  res <- with_top_env(env, {
+    test_dir(test_path, reporter = reporter, env = env, filter = filter, ...)
+  })
+
+  if (!all_passed(res)) {
+    stop("Test failures", call. = FALSE)
+  }
+
+  invisible(res)
+}
+
+#' @inheritParams test_package
 #' @export
 #' @rdname test_package
-test_check <- function(package, filter = NULL, reporter = "summary") {
+test_check <- function(package, filter = NULL, reporter = "check", ...) {
   require(package, character.only = TRUE)
 
   test_path <- "testthat"
@@ -72,16 +79,7 @@ test_check <- function(package, filter = NULL, reporter = "summary") {
     stop("No tests found for ", package, call. = FALSE)
   }
 
-  reporter <- find_reporter(reporter)
-  env <- test_pkg_env(package)
-  with_top_env(env, {
-    df <- test_dir(test_path, reporter = reporter, env = env, filter = filter)
-  })
-
-  if (reporter$failed) {
-    stop("Test failures", call. = FALSE)
-  }
-  invisible(df)
+  run_tests(package, test_path, filter, reporter, ...)
 }
 
 
