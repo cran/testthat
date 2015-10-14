@@ -23,7 +23,6 @@ test_that("failure to throw an error is a failure", {
 
   res <- throws_error("error")(NULL)
   expect_that(res$passed, is_false())
-
 })
 
 test_that("warnings are caught by gives_warning", {
@@ -55,6 +54,14 @@ test_that("messages are caught by shows_message", {
   expect_that(f(), shows_message("a"))
   expect_that(g(), shows_message("a"))
   expect_that(g(), shows_message("b"))
+})
+
+test_that("matching expectations with NA", {
+  f <- function() {}
+  expect_error(f(), NA)
+  expect_warning(f(), NA)
+  expect_message(f(), NA)
+  expect_output(f(), NA)
 })
 
 test_that("shows_mesage / gives_warning work when no messages are generated", {
@@ -112,6 +119,10 @@ test_that("expect_null checks for NULLs", {
 
 test_that("takes_less_than verifies duration", {
   expect_that(1, takes_less_than(1))
+})
+
+test_that("expect_silent checks for out", {
+  expect_silent("")
 })
 
 test_that("expected_named verifies presence of names", {

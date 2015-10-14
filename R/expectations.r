@@ -26,11 +26,12 @@ expect_is <- function(object, class, info = NULL, label = NULL) {
 #' @rdname oldskool
 is_a <- function(class) {
   function(x) {
-    actual <- paste0(class(x), collapse = ", ")
+    actual_s <- paste0(class(x), collapse = ", ")
+    class_s <- paste(class, collapse = ", ")
     expectation(
       inherits(x, class),
-      paste0("inherits from ", actual, " not ", class),
-      paste0("inherits from ", class)
+      paste0("inherits from ", actual_s, " not ", class_s),
+      paste0("inherits from ", class_s)
     )
   }
 }
@@ -282,6 +283,36 @@ expect_less_than <- function(object, expected, ..., info = NULL, label = NULL,
 }
 
 #' @export
+#' @rdname expect-compare
+expect_lt <- function(object, expected) {
+  label_object <- find_expr("object")
+  label_expected <- find_expr("expected")
+
+  diff <- expected - object
+
+  expect(
+    diff > 0,
+    paste0(label_object, " is not less than ", label_expected,
+           ". Difference: ", format(diff))
+  )
+}
+
+#' @export
+#' @rdname expect-compare
+expect_lte <- function(object, expected) {
+  label_object <- find_expr("object")
+  label_expected <- find_expr("expected")
+
+  diff <- expected - object
+
+  expect(
+    diff >= 0,
+    paste0(label_object, " is strictly more than ", label_expected,
+           ". Difference: ", format(diff))
+  )
+}
+
+#' @export
 #' @rdname oldskool
 is_more_than <- function(expected, label = NULL, ...) {
   if (is.null(label)) {
@@ -312,4 +343,34 @@ expect_more_than <- function(object, expected, ..., info = NULL, label = NULL,
   }
   expect_that(object, is_more_than(expected, label = expected.label, ...),
               info = info, label = label)
+}
+
+#' @export
+#' @rdname expect-compare
+expect_gt <- function(object, expected) {
+  label_object <- find_expr("object")
+  label_expected <- find_expr("expected")
+
+  diff <- expected - object
+
+  expect(
+    diff < 0,
+    paste0(label_object, " is more than ", label_expected,
+           ". Difference: ", format(diff))
+  )
+}
+
+#' @export
+#' @rdname expect-compare
+expect_gte <- function(object, expected) {
+  label_object <- find_expr("object")
+  label_expected <- find_expr("expected")
+
+  diff <- expected - object
+
+  expect(
+    diff <= 0,
+    paste0(label_object, " is strictly less than ", label_expected,
+           ". Difference: ", format(diff))
+  )
 }

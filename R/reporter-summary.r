@@ -72,35 +72,29 @@ SummaryReporter <- setRefClass("SummaryReporter", contains = "Reporter",
     },
 
     end_reporter = function() {
-      charrep <- function(char, times) {
-        sapply(times, function(i) paste0(rep.int(char, i), collapse = ""))
-      }
-
       if (n == 0) {
+        if (!has_tests)
+          return()
         cat("\n")
-        if (has_tests && sample(10, 1) == 1 && show_praise) {
-          cat(colourise(sample(.praise, 1), "passed"), "\n")
+        if (show_praise && runif(1) < 0.1) {
+          cat(colourise(praise(), "passed"), "\n")
         } else {
           cat(colourise("DONE", "passed"), "\n")
         }
       } else {
         cat("\n")
+
         reports <- vapply(seq_len(n), function(i) {
           failure_summary(failures[[i]], labels[i])
         }, character(1))
         cat(paste(reports, collapse = "\n\n"), "\n", sep = "")
+
+        if (show_praise && runif(1) < 0.25) {
+          cat("\n", colourise(encourage(), "error"), "\n", sep = "")
+        }
       }
     }
   )
 )
 
-.praise <- c(
-  "You rock!",
-  "You are a coding rockstar!",
-  "Keep up the good work.",
-  ":)",
-  "Woot!",
-  "Way to go!",
-  "Nice code."
-)
 labels <- c(1:9, letters, LETTERS)

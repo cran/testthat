@@ -3,7 +3,9 @@
 \name{skip}
 \alias{skip}
 \alias{skip_if_not_installed}
+\alias{skip_on_appveyor}
 \alias{skip_on_cran}
+\alias{skip_on_os}
 \alias{skip_on_travis}
 \title{Skip a test.}
 \usage{
@@ -13,12 +15,19 @@ skip_if_not_installed(pkg)
 
 skip_on_cran()
 
+skip_on_os(os)
+
 skip_on_travis()
+
+skip_on_appveyor()
 }
 \arguments{
 \item{message}{A message describing why the test was skipped.}
 
 \item{pkg}{Name of package to check for}
+
+\item{os}{Character vector of system names. Supported values are
+\code{"windows"}, \code{"mac"}, \code{"linux"} and \code{"solaris"}.}
 }
 \description{
 This function allows you to skip a test if it's not currently available.
@@ -32,6 +41,9 @@ environment variable set by devtools.
 
 \code{skip_on_travis()} skips tests on travis by inspecting the
 \code{TRAVIS} environment variable.
+
+\code{skip_on_appveyor()} skips tests on appveyor by inspecting the
+\code{APPVEYOR} environment variable.
 
 \code{skip_if_not_installed()} skips a tests if a package is not installed
 (useful for suggested packages).

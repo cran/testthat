@@ -11,6 +11,9 @@ compare <- function(x, y, ...) {
 }
 
 comparison <- function(equal = TRUE, message = "Equal") {
+  stopifnot(is.logical(equal), length(equal) == 1)
+  stopifnot(is.character(message), length(message) == 1)
+
   structure(
     list(
       equal = equal,
@@ -67,37 +70,42 @@ compare.character <- function(x, y, ..., max_diffs = 5, max_lines = 5,
 
   # If they're not the same type or length, fallback to default method
   if (!same_type(x, y)) return(NextMethod())
-  if (length(x) != length(y)) return(NextMethod())
+
+  lx <- length(x)
+  ly <- length(y)
+  if (lx != ly) {
+    length(x) <- length(y) <- max(lx, ly)
+    length_diff <- sprintf("Lengths (%s, %s) differ\n", lx, ly)
+  } else {
+    length_diff <- NULL
+  }
 
   # If vectorwise-equal, fallback to default method
   diff <- xor(is.na(x), is.na(y)) | x != y
   diff[is.na(diff)] <- FALSE
+  which_diff <- which(diff)
 
-  if (!any(diff)) {
+  if (length(which_diff) == 0L) {
     return(NextMethod())
   }
 
   width <- width - 6 # allocate space for labels
-  n_show <- seq_len(min(length(diff), max_diffs))
-  show <- which(diff)[n_show]
+  n_show <- seq_len(min(length(which_diff), max_diffs))
+  show <- which_diff[n_show]
 
   encode <- function(x) encodeString(x, quote = '"')
   show_x <- str_trunc(encode(x[show]), width * max_lines)
   show_y <- str_trunc(encode(y[show]), width * max_lines)
 
   sidebyside <- Map(function(x, y, pos) {
-    x <- paste0("x[", pos, "]: ", str_chunk(x, width))
-    y <- paste0("y[", pos, "]: ", str_chunk(y, width))
-
-    n <- max(length(x), length(y))
-    length(x) <- n
-    length(y) <- n
-
-    paste0(x, "\n", y, collapse = "\n\n")
+    x <- if (pos <= lx) paste0("x[", pos, "]: ", str_chunk(x, width))
+    y <- if (pos <= ly) paste0("y[", pos, "]: ", str_chunk(y, width))
+    paste(c(x, y), collapse = "\n")
   }, show_x, show_y, show)
 
-  msg <- paste0(sum(diff), " string mismatches:\n",
-    paste0(sidebyside, collapse = "\n\n"))
+  msg <- paste0(length_diff,
+                sum(diff), " string mismatches:\n",
+                paste0(sidebyside, collapse = "\n\n"))
   comparison(FALSE, msg)
 }
 
@@ -131,11 +139,12 @@ str_chunk <- function(x, length) {
 #' # Compare ignores minor numeric differences in the same way
 #' # as all.equal.
 #' compare(x, x + 1e-9)
-compare.numeric <- function(x, y, max_diffs = 10, ...) {
+compare.numeric <- function(x, y, ..., max_diffs = 10) {
   equal <- all.equal(x, y, ...)
   if (isTRUE(equal)) return(comparison())
 
   # If they're not the same type or length, fallback to default method
+  equal <- paste0(equal, collapse = "\n")
   if (!is.integer(x) && !is.numeric(y)) return(comparison(FALSE, equal))
   if (length(x) != length(y)) return(comparison(FALSE, equal))
 
@@ -169,7 +178,7 @@ compare.numeric <- function(x, y, max_diffs = 10, ...) {
 }
 
 print_out <- function(x, ...) {
-  lines <- capture.output(print(x, ...))
+  lines <- utils::capture.output(print(x, ...))
   paste0(lines, collapse = "\n")
 }
 

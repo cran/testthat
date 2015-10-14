@@ -41,7 +41,7 @@
 #'   scale = expectedValue)
 #' }
 #'
-#' # expect_equalivalent ignores attributes
+#' # expect_equivalent ignores attributes
 #' a <- b <- 1:3
 #' names(b) <- letters[1:3]
 #' expect_equivalent(a, b)
@@ -58,7 +58,7 @@ equals <- function(expected, label = NULL, ...) {
   }
 
   function(actual) {
-    same <- compare(expected, actual, ...)
+    same <- compare(actual, expected, ...)
 
     expectation(
       same$equal,

@@ -20,15 +20,18 @@
 #' }
 expect_that <- function(object, condition, info = NULL, label = NULL) {
   stopifnot(length(info) <= 1, length(label) <= 1)
-  if (is.null(label)) {
-    label <- find_expr("object")
-  }
+
+  label <- label %||% find_expr("object")
   results <- condition(object)
+  stopifnot(is.expectation(results))
 
   results$srcref <- find_test_srcref()
 
-  results$failure_msg <- paste0(label, " ", results$failure_msg)
-  results$success_msg <- paste0(label, " ", results$success_msg)
+  if (!is.null(label)) {
+    results$failure_msg <- paste0(label, " ", results$failure_msg)
+    results$success_msg <- paste0(label, " ", results$success_msg)
+  }
+
   if (!is.null(info)) {
     results$failure_msg <- paste0(results$failure_msg, "\n", info)
     results$success_msg <- paste0(results$success_msg, "\n", info)
@@ -101,9 +104,11 @@ succeed <- function(message = "Success has been forced") {
 #' Negate an expectation
 #'
 #' This negates an expectation, making it possible to express that you
-#' want the opposite of a standard expectation.
+#' want the opposite of a standard expectation. This function is soft-deprecated
+#' and will be removed in a future version.
 #'
 #' @param f an existing expectation function
+#' @keywords internal
 #' @export
 #' @examples
 #' x <- 1

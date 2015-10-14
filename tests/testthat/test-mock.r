@@ -118,6 +118,7 @@ test_that("can mock hidden functions", {
 test_that("can mock if package is not loaded", {
   if ("package:devtools" %in% search())
     skip('devtools is loaded')
+  skip_if_not_installed("devtools")
   with_mock(`devtools::add_path` = identity, expect_identical(devtools::add_path, identity))
 })
 
@@ -132,7 +133,6 @@ test_that("changes to variables are preserved between calls and visible outside"
 })
 
 test_that("can mock function imported from other package", {
-  expect_true("setRefClass" %in% getNamespaceImports("testthat")[["methods"]])
   with_mock(`testthat::setRefClass` = identity, expect_identical(setRefClass, identity))
   with_mock(`methods::setRefClass` = identity, expect_identical(setRefClass, identity))
 })

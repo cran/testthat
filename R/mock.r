@@ -9,6 +9,9 @@
 #' On exit (regular or error), all functions are restored to their previous state.
 #' This is somewhat abusive of R's internals, and is still experimental, so use with care.
 #'
+#' Primitives (such as \code{\link[base]{interactive}}) cannot be mocked, but this can be
+#' worked around easily by defining a wrapper function with the same name.
+#'
 #' @param ... named parameters redefine mocked functions, unnamed parameters
 #'   will be evaluated after mocking the functions
 #' @param .env the environment in which to patch the functions,
@@ -67,7 +70,7 @@ extract_mocks <- function(new_values, .env, eval_env = parent.frame()) {
   mock_qual_names <- names(new_values)
 
   lapply(
-    setNames(nm = mock_qual_names),
+    stats::setNames(nm = mock_qual_names),
     function(qual_name) {
       pkg_name <- gsub(pkg_and_name_rx, "\\1", qual_name)
 
