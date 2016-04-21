@@ -1,3 +1,30 @@
+# testthat 1.0.1
+
+* New `expect_output_file()` to compare output of a function
+  with a text file, and optionally update it (#443, @krlmlr).
+
+* Properly scoped use + compilation of C++ unit testing code using
+  Catch to `gcc` and `clang` only, as Catch includes code that does
+  not strictly conform to the C++98 standard. (@kevinushey)
+
+* Fixed an out-of-bounds memory access when routing Catch output
+  through `Rprintf()`. (@kevinushey)
+  
+* Ensure that unit tests run on R-oldrel (remove use of `dir.exists()`).
+  (@kevinushey)
+  
+* Improved overriding of calls to `exit()` within Catch, to ensure
+  compatibility with GCC 6.0. (@krlmlr)
+
+* Hardened formatting of difference messages, previously the presence of `%` 
+  characters could affect the output (#446, @krlmlr).
+  
+* Fixed errors in `expect_equal()` when comparing numeric vectors with and 
+  without attributes (#453, @krlmlr).
+
+* `auto_test()` and `auto_test_package()` show only the results of the 
+  current test run and not of previously failed runs (#456, @krlmlr).
+
 # testthat 1.0.0
 
 ## Breaking changes
@@ -22,7 +49,7 @@ factor("a") %>%
 The exception to this rule are the expectations that evaluate (i.e.
 for messages, warnings, errors, output etc), which invisibly return `NULL`. These functions are now more consistent: using `NA` will cause a failure if there is a errors/warnings/mesages/output (i.e. they're not missing), and will `NULL` fail if there aren't any errors/warnings/mesages/output. This previously didn't work for `expect_output()` (#323), and the error messages were confusing with `expect_error(..., NA)` (#342, @nealrichardson + @krlmlr, #317).
 
-Another change is that `expect_output()` now requires you to explicit print the output if you want to test a print method: `expect_output("a", "a")` will fail, `expect_output(print("a"), "a")` will succeed.
+Another change is that `expect_output()` now requires you to explicitly print the output if you want to test a print method: `expect_output("a", "a")` will fail, `expect_output(print("a"), "a")` will succeed.
 
 There are six new expectations:
 
