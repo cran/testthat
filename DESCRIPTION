@@ -1,5 +1,5 @@
 Package: testthat
-Version: 1.0.1
+Version: 1.0.2
 Title: Unit Testing for R
 Description: A unit testing system designed to be fun, flexible and easy to
     set up.
@@ -31,9 +31,9 @@ Collate: 'auto-test.R' 'colour-text.R' 'compare.R'
         'traceback.R' 'try-again.R' 'utils.R' 'watcher.R'
 RoxygenNote: 5.0.1
 NeedsCompilation: yes
-Packaged: 2016-04-18 20:44:12 UTC; hadley
+Packaged: 2016-04-22 20:14:31 UTC; hadley
 Author: Hadley Wickham [aut, cre],
   RStudio [cph]
 Maintainer: Hadley Wickham <hadley@rstudio.com>
 Repository: CRAN
-Date/Publication: 2016-04-21 15:33:49
+Date/Publication: 2016-04-23 08:37:40

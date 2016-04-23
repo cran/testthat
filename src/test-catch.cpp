@@ -1,12 +1,14 @@
 #include <testthat.h>
 
+#include <string>
 #include <stdexcept>
 #include <exception>
 
 namespace {
 
 void ouch() {
-  throw std::logic_error("logic");
+  std::string message = "logic";
+  throw std::logic_error(message);
 }
 
 } // anonymous namespace
