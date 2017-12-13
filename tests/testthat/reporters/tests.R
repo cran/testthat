@@ -29,11 +29,26 @@ test_that("Error:1", {
 })
 
 test_that("Error:3", {
-  f <- function() {g()}
-  g <- function() {h()}
-  h <- function() {stop("!")}
+  f <- function() {
+    g()
+  }
+  g <- function() {
+    h()
+  }
+  h <- function() {
+    stop("!")
+  }
 
   f()
+})
+
+context("Recursion")
+
+test_that("Recursion:1", {
+  f <- function(x) {
+    if (x > 0) f(x - 1) else stop("This is deep")
+  }
+  f(25)
 })
 
 context("Skips")
@@ -43,8 +58,13 @@ test_that("Skip:1", {
 })
 
 test_that("Skip:2", {
-  f <- function() {skip("skip")}
+  f <- function() {
+    skip("skip")
+  }
   f()
+})
+
+test_that("Skip:3", {
 })
 
 context("Warnings")
@@ -52,10 +72,12 @@ context("Warnings")
 test_that("Warning:1", {
   warning("abc")
 })
-
 test_that("Warning:2", {
+  f <- function() {
+    warning("ghi")
+  }
   warning("def")
-  warning("ghi")
+  f()
 })
 
 context("Output")

@@ -1,14 +1,15 @@
 #' Expectation: is the object equal to a value?
 #'
-#' \itemize{
-#' \item \code{expect_identical} tests with \code{\link{identical}}
-#' \item \code{expect_equal} tests with \code{\link{all.equal}}
-#' \item \code{expect_equivalent} tests with \code{\link{all.equal}} and
-#'   \code{check.attributes = FALSE}
-#' }
+#' - `expect_identical` tests with [identical()]
+#' - `expect_equal` tests with [all.equal()]
+#' - `expect_setequal` ignores order and duplicates
+#' - `expect_equivalent` tests with [all.equal()] and
+#'   `check.attributes = FALSE`
+#' - `expect_reference` tests if two symbols point to the same underlying
+#'    object in memory (requires rlang 1.2.9000 or greater)
 #
 #' @param expected Expected value
-#' @param expected.label Equivalent of \code{label} for shortcut form.
+#' @param expected.label Equivalent of `label` for shortcut form.
 #' @inheritParams expect_that
 #' @family expectations
 #' @examples
@@ -44,52 +45,70 @@ NULL
 
 #' @export
 #' @rdname equality-expectations
-#' @param ... other values passed to \code{\link{all.equal}}
+#' @param ... other values passed to [all.equal()]
 expect_equal <- function(object, expected, ..., info = NULL, label = NULL,
                          expected.label = NULL) {
+  act <- quasi_label(enquo(object), label)
+  exp <- quasi_label(enquo(expected), expected.label)
 
-  lab_act <- make_label(object, label)
-  lab_exp <- make_label(expected, expected.label)
-
-  comp <- compare(object, expected, ...)
+  comp <- compare(act$val, exp$val, ...)
   expect(
     comp$equal,
-    sprintf("%s not equal to %s.\n%s", lab_act, lab_exp, comp$message),
+    sprintf("%s not equal to %s.\n%s", act$lab, exp$lab, comp$message),
     info = info
   )
 
-  invisible(object)
+  invisible(act$val)
 }
+
 
 #' @export
 #' @rdname equality-expectations
-expect_equivalent <- function(object, expected, info = NULL, label = NULL,
-                              expected.label = NULL) {
-  lab_act <- make_label(object, label)
-  lab_exp <- make_label(expected, expected.label)
+expect_setequal <- function(object, expected) {
+  act <- quasi_label(enquo(object))
+  exp <- quasi_label(enquo(expected))
 
-  comp <- compare(object, expected, check.attributes = FALSE)
+  act$val <- sort(unique(act$val))
+  exp$val <- sort(unique(exp$val))
+
+  comp <- compare(act$val, exp$val)
   expect(
     comp$equal,
-    sprintf("%s not equivalent to %s.\n%s", lab_act, lab_exp, comp$message),
+    sprintf("%s not set-equal to %s.\n%s", act$lab, exp$lab, comp$message)
+  )
+
+  invisible(act$val)
+}
+
+
+#' @export
+#' @rdname equality-expectations
+expect_equivalent <- function(object, expected, ..., info = NULL, label = NULL,
+                              expected.label = NULL) {
+  act <- quasi_label(enquo(object), label)
+  exp <- quasi_label(enquo(expected), expected.label)
+
+  comp <- compare(act$val, exp$val, ..., check.attributes = FALSE)
+  expect(
+    comp$equal,
+    sprintf("%s not equivalent to %s.\n%s", act$lab, exp$lab, comp$message),
     info = info
   )
-  invisible(object)
+  invisible(act$val)
 }
 
 #' @export
 #' @rdname equality-expectations
 expect_identical <- function(object, expected, info = NULL, label = NULL,
                              expected.label = NULL) {
+  act <- quasi_label(enquo(object), label)
+  exp <- quasi_label(enquo(expected), expected.label)
 
-  lab_act <- make_label(object, label)
-  lab_exp <- make_label(expected, expected.label)
-
-  ident <- identical(object, expected)
+  ident <- identical(act$val, exp$val)
   if (ident) {
     msg <- ""
   } else {
-    compare <- compare(object, expected)
+    compare <- compare(obj$val, exp$val)
     if (compare$equal) {
       msg <- "Objects equal but not identical"
     } else {
@@ -99,9 +118,53 @@ expect_identical <- function(object, expected, info = NULL, label = NULL,
 
   expect(
     ident,
-    sprintf("%s not identical to %s.\n%s", lab_act, lab_exp, msg),
+    sprintf("%s not identical to %s.\n%s", act$lab, exp$lab, msg),
     info = info
   )
-  invisible(object)
+  invisible(act$val)
 }
 
+#' @export
+#' @rdname equality-expectations
+expect_identical <- function(object, expected, info = NULL, label = NULL,
+                             expected.label = NULL) {
+  act <- quasi_label(enquo(object), label)
+  exp <- quasi_label(enquo(expected), expected.label)
+
+  ident <- identical(act$val, exp$val)
+  if (ident) {
+    msg <- ""
+  } else {
+    compare <- compare(act$val, exp$val)
+    if (compare$equal) {
+      msg <- "Objects equal but not identical"
+    } else {
+      msg <- compare$message
+    }
+  }
+
+  expect(
+    ident,
+    sprintf("%s not identical to %s.\n%s", act$lab, exp$lab, msg),
+    info = info
+  )
+  invisible(act$val)
+}
+
+#' @export
+#' @rdname equality-expectations
+expect_reference <- function(object, expected, info = NULL, label = NULL,
+                             expected.label = NULL) {
+  act <- quasi_label(enquo(object), label)
+  exp <- quasi_label(enquo(expected), expected.label)
+
+  expect(
+    is_reference(act$val, exp$val),
+    sprintf("%s not a reference %s.", act$lab, exp$lab),
+    info = info
+  )
+  invisible(act$val)
+}
+
+# expect_reference() needs dev version of rlang
+utils::globalVariables("is_reference")

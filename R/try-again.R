@@ -2,6 +2,7 @@
 #'
 #' @param times Maximum number of attempts.
 #' @param code Code to evaluate
+#' @keywords internal
 #' @export
 #' @examples
 #' third_try <- local({
@@ -34,8 +35,9 @@ try_again <- function(times, code) {
       }
     )
 
-    if (is.null(e))
+    if (is.null(e)) {
       return(invisible(TRUE))
+    }
 
     times <- times - 1L
   }

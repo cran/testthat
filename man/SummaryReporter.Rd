@@ -9,18 +9,28 @@
 SummaryReporter
 }
 \description{
-This is the most useful reporting reporter as it lets you know both which
-tests have run successfully, as well as fully reporting information about
-failures and errors.  It is the default reporting reporter used by
-\code{\link{test_dir}} and \code{\link{test_file}}.
+This is a reporter designed for interactive usage: it lets you know which
+tests have run successfully and as well as fully reporting information about
+failures and errors.
 }
 \details{
 You can use the \code{max_reports} field to control the maximum number
 of detailed reports produced by this reporter. This is useful when running
-with \code{\link{auto_test}}
+with \code{\link[=auto_test]{auto_test()}}
 
 As an additional benefit, this reporter will praise you from time-to-time
 if all your tests pass.
 }
+\seealso{
+Other reporters: \code{\link{CheckReporter}},
+  \code{\link{DebugReporter}}, \code{\link{FailReporter}},
+  \code{\link{ListReporter}},
+  \code{\link{LocationReporter}},
+  \code{\link{MinimalReporter}},
+  \code{\link{MultiReporter}},
+  \code{\link{ProgressReporter}},
+  \code{\link{RstudioReporter}},
+  \code{\link{SilentReporter}}, \code{\link{StopReporter}},
+  \code{\link{TapReporter}}, \code{\link{TeamcityReporter}}
+}
 \keyword{datasets}
-

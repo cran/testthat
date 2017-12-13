@@ -5,13 +5,13 @@
 #' @param object object to test
 #' @param condition, a function that returns whether or not the condition
 #'   is met, and if not, an error message to display.
-#' @param label object label. When \code{NULL}, computed from deparsed object.
+#' @param label object label. When `NULL`, computed from deparsed object.
 #' @param info extra information to be included in the message (useful when
 #'   writing tests in loops).
 #' @return the (internal) expectation result as an invisible list
 #' @keywords internal
 #' @export
-#' @seealso \code{\link{fail}} for an expectation that always fails.
+#' @seealso [fail()] for an expectation that always fails.
 #' @examples
 #' expect_that(5 * 2, equals(10))
 #' expect_that(sqrt(2) ^ 2, equals(2))
@@ -49,7 +49,7 @@ succeed <- function(message = "Success has been forced") {
 #' Negate an expectation
 #'
 #' This negates an expectation, making it possible to express that you
-#' want the opposite of a standard expectation. This function is soft-deprecated
+#' want the opposite of a standard expectation. This function is deprecated
 #' and will be removed in a future version.
 #'
 #' @param f an existing expectation function
@@ -62,12 +62,12 @@ not <- function(f) {
   negate <- function(expt) {
     expect(
       !expectation_success(expt),
-      message = paste0("NOT(", expt$message, ")"),
+      failure_message = paste0("NOT(", expt$message, ")"),
       srcref = expt$srcref
     )
   }
 
   function(...) {
-    negate(capture_first_expectation(f(...)))
+    negate(capture_expectation(f(...)))
   }
 }

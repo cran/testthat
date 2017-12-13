@@ -4,38 +4,64 @@
 #' This will produce an informative message, but will not cause the test
 #' suite to fail.
 #'
+#' `skip*` functions are intended for use within [test_that()]
+#' blocks.  All expectations following the \code{skip*} statement within the
+#' same `test_that` block will be skipped.  Test summaries that report skip
+#' counts are reporting how many `test_that` blocks triggered a `skip*`
+#' statement, not how many expectations were skipped.
+#'
 #' @section Helpers:
-#' \code{skip_if_not()} works like \code{\link{stopifnot}}, generating
+#' `skip_if_not()` works like [stopifnot()], generating
 #' a message automatically based on the first argument.
 #'
-#' \code{skip_on_cran()} skips tests on CRAN, using the \code{NOT_CRAN}
+#' `skip_on_cran()` skips tests on CRAN, using the `NOT_CRAN`
 #' environment variable set by devtools.
 #'
-#' \code{skip_on_travis()} skips tests on travis by inspecting the
-#' \code{TRAVIS} environment variable.
+#' `skip_on_travis()` skips tests on travis by inspecting the
+#' `TRAVIS` environment variable.
 #'
-#' \code{skip_on_appveyor()} skips tests on appveyor by inspecting the
-#' \code{APPVEYOR} environment variable.
-#' 
-#' \code{skip_on_bioc()} skips tests on Bioconductor by inspecting the
-#' \code{BBS_HOME} environment variable.
+#' `skip_on_appveyor()` skips tests on appveyor by inspecting the
+#' `APPVEYOR` environment variable.
 #'
-#' \code{skip_if_not_installed()} skips a tests if a package is not installed
-#' (useful for suggested packages).
+#' `skip_on_bioc()` skips tests on Bioconductor by inspecting the
+#' `BBS_HOME` environment variable.
+#'
+#' `skip_if_not_installed()` skips a tests if a package is not installed
+#' or cannot be loaded (useful for suggested packages).  It loads the package as
+#' a side effect, because the package is likely to be used anyway.
 #'
 #' @param message A message describing why the test was skipped.
 #' @export
 #' @examples
 #' if (FALSE) skip("No internet connection")
+#'
+#' ## The following are only meaningful when put in test files and
+#' ## run with `test_file`, `test_dir`, `test_check`, etc.
+#'
+#' test_that("skip example", {
+#'   expect_equal(1, 1L)    # this expectation runs
+#'   skip('skip')
+#'   expect_equal(1, 2)     # this one skipped
+#'   expect_equal(1, 3)     # this one is also skipped
+#' })
 skip <- function(message) {
   cond <- structure(list(message = message), class = c("skip", "condition"))
   stop(cond)
 }
 
+# Called automatically if the test contains no expectations
+skip_empty <- function() {
+  cond <- structure(
+    list(message = "Empty test"),
+    class = c("skip_empty", "skip", "condition")
+  )
+  stop(cond)
+}
+
 #' @export
 #' @rdname skip
-#' @param condition Boolean condition to check. If not \code{TRUE}, will
-#'   skip the test.
+#' @param condition Boolean condition to check. `skip_if_not()` will skip if
+#'   `FALSE`, `skip_if()` will skip if `TRUE`.
 skip_if_not <- function(condition, message = deparse(substitute(condition))) {
   if (!isTRUE(condition)) {
     skip(message)
@@ -43,14 +69,33 @@ skip_if_not <- function(condition, message = deparse(substitute(condition))) {
 }
 
 #' @export
-#' @param pkg Name of package to check for
 #' @rdname skip
-skip_if_not_installed <- function(pkg) {
-  if (requireNamespace(pkg, quietly = TRUE)) {
-    return(invisible(TRUE))
+skip_if <- function(condition, message = deparse(substitute(condition))) {
+  if (isTRUE(condition)) {
+    skip(message)
+  }
+}
+
+#' @export
+#' @param pkg Name of package to check for
+#' @param minimum_version Minimum required version for the package
+#' @rdname skip
+skip_if_not_installed <- function(pkg, minimum_version = NULL) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    skip(paste0(pkg, " cannot be loaded"))
   }
 
-  skip(paste0(pkg, " not installed"))
+  if (!is.null(minimum_version)) {
+    installed_version <- utils::packageVersion(pkg)
+    if (installed_version < minimum_version) {
+      skip(paste0(
+        "Installed ", pkg, " is version ", installed_version, "; ",
+        "but ", minimum_version, " is required"
+      ))
+    }
+  }
+
+  return(invisible(TRUE))
 }
 
 #' @export
@@ -65,11 +110,13 @@ skip_on_cran <- function() {
 
 #' @export
 #' @param os Character vector of system names. Supported values are
-#'   \code{"windows"}, \code{"mac"}, \code{"linux"} and \code{"solaris"}.
+#'   `"windows"`, `"mac"`, `"linux"` and `"solaris"`.
 #' @rdname skip
 skip_on_os <- function(os) {
-  os <- match.arg(os, c("windows", "mac", "linux", "solaris"),
-    several.ok = TRUE)
+  os <- match.arg(
+    os, c("windows", "mac", "linux", "solaris"),
+    several.ok = TRUE
+  )
   sysname <- tolower(Sys.info()[["sysname"]])
 
   switch(sysname,
@@ -110,4 +157,29 @@ skip_on_bioc <- function() {
   }
 
   skip("On Bioconductor")
+}
+
+#' @export
+#' @rdname skip
+skip_if_translated <- function() {
+  if (!is_english()) {
+    return(invisible(TRUE))
+  }
+
+  skip("Running in non-English environment")
+}
+
+is_english <- function() {
+  lang <- Sys.getenv("LANGUAGE")
+  if (identical(lang, "en")) {
+    return(TRUE)
+  }
+
+  if (.Platform$OS.type == "windows") {
+    lc <- sub("\\..*", "", sub("_.*", "", Sys.getlocale("LC_CTYPE")))
+    lc == "C" || lc == "English"
+  } else {
+    lc <- sub("\\..*", "", Sys.getlocale("LC_MESSAGES"))
+    lc == "C" || substr(lc, 1, 2) == "en"
+  }
 }

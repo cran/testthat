@@ -9,41 +9,44 @@
 #' On exit (regular or error), all functions are restored to their previous state.
 #' This is somewhat abusive of R's internals, and is still experimental, so use with care.
 #'
-#' Primitives (such as \code{\link[base]{interactive}}) cannot be mocked, but this can be
-#' worked around easily by defining a wrapper function with the same name.
+#' Functions in base packages cannot be mocked, but this can be
+#' worked around easily by defining a wrapper function.
 #'
 #' @param ... named parameters redefine mocked functions, unnamed parameters
 #'   will be evaluated after mocking the functions
 #' @param .env the environment in which to patch the functions,
 #'   defaults to the top-level environment.  A character is interpreted as
 #'   package name.
+#' @keywords internal
 #' @return The result of the last unnamed parameter
 #' @references Suraj Gupta (2012): \href{http://obeautifulcode.com/R/How-R-Searches-And-Finds-Stuff}{How R Searches And Finds Stuff}
 #' @export
 #' @examples
+#' add_one <- function(x) x + 1
+#' expect_equal(add_one(2), 3)
 #' with_mock(
-#'   all.equal = function(x, y, ...) TRUE,
-#'   expect_equal(2 * 3, 4),
-#'   .env = "base"
+#'   add_one = function(x) x - 1,
+#'   expect_equal(add_one(2), 1)
 #' )
-#' with_mock(
-#'   `base::identical` = function(x, y, ...) TRUE,
-#'   `base::all.equal` = function(x, y, ...) TRUE,
-#'   expect_equal(x <- 3 * 3, 6),
-#'   expect_identical(x + 4, 9)
+#' square_add_one <- function(x) add_one(x) ^ 2
+#' expect_equal(square_add_one(2), 9)
+#' expect_equal(
+#'   with_mock(
+#'     add_one = function(x) x - 1,
+#'     square_add_one(2)
+#'   ),
+#'   1
 #' )
-#' \dontrun{
-#' expect_equal(3, 5)
-#' expect_identical(3, 5)
-#' }
 with_mock <- function(..., .env = topenv()) {
   new_values <- eval(substitute(alist(...)))
   mock_qual_names <- names(new_values)
 
   if (all(mock_qual_names == "")) {
-    warning("Not mocking anything. Please use named parameters to specify the functions you want to mock.",
-            call. = FALSE)
-    code_pos <- TRUE
+    warning(
+      "Not mocking anything. Please use named parameters to specify the functions you want to mock.",
+      call. = FALSE
+    )
+    code_pos <- rep(TRUE, length(new_values))
   } else {
     code_pos <- (mock_qual_names == "")
   }
@@ -55,12 +58,15 @@ with_mock <- function(..., .env = topenv()) {
   lapply(mocks, set_mock)
 
   # Evaluate the code
-  ret <- invisible(NULL)
-  for (expression in code) {
-    ret <- eval(expression, parent.frame())
+  if (length(code) > 0) {
+    for (expression in code[-length(code)]) {
+      eval(expression, parent.frame())
+    }
+    # Isolate last item for visibility
+    eval(code[[length(code)]], parent.frame())
   }
-  ret
 }
+
 
 pkg_rx <- ".*[^:]"
 colons_rx <- "::(?:[:]?)"
@@ -77,6 +83,13 @@ extract_mocks <- function(new_values, .env, eval_env = parent.frame()) {
     function(qual_name) {
       pkg_name <- gsub(pkg_and_name_rx, "\\1", qual_name)
 
+      if (is_base_pkg(pkg_name)) {
+        stop(
+          "Can't mock functions in base packages (", pkg_name, ")",
+          call. = FALSE
+        )
+      }
+
       name <- gsub(pkg_and_name_rx, "\\2", qual_name)
 
       if (pkg_name == "")
@@ -86,13 +99,16 @@ extract_mocks <- function(new_values, .env, eval_env = parent.frame()) {
 
       if (!exists(name, envir = env, mode = "function"))
         stop("Function ", name, " not found in environment ",
-             environmentName(env), ".", call. = FALSE)
+          environmentName(env), ".", call. = FALSE)
       mock(name = name, env = env, new = eval(new_values[[qual_name]], eval_env, eval_env))
     }
   )
 }
 
-#' @useDynLib testthat duplicate_
+is_base_pkg <- function(x) {
+  x %in% rownames(utils::installed.packages(priority = "base"))
+}
+
 mock <- function(name, env, new) {
   target_value <- get(name, envir = env, mode = "function")
   structure(list(
@@ -101,12 +117,10 @@ mock <- function(name, env, new) {
     new_value = new), class = "mock")
 }
 
-#' @useDynLib testthat reassign_function
 set_mock <- function(mock) {
   .Call(reassign_function, mock$name, mock$env, mock$target_value, mock$new_value)
 }
 
-#' @useDynLib testthat reassign_function
 reset_mock <- function(mock) {
   .Call(reassign_function, mock$name, mock$env, mock$target_value, mock$orig_value)
 }

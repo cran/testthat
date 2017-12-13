@@ -8,7 +8,9 @@ NULL
 #' http://confluence.jetbrains.com/display/TCD7/Build+Script+Interaction+with+TeamCity
 #'
 #' @export
-TeamcityReporter <- R6::R6Class("TeamcityReporter", inherit = Reporter,
+#' @family reporters
+TeamcityReporter <- R6::R6Class("TeamcityReporter",
+  inherit = Reporter,
   public = list(
     i = NA_integer_,
 
@@ -18,7 +20,8 @@ TeamcityReporter <- R6::R6Class("TeamcityReporter", inherit = Reporter,
 
     end_context = function(context) {
       private$report_event("testSuiteFinished", context)
-      self$cat_paragraph()
+      self$cat_line()
+      self$cat_line()
     },
 
     start_test = function(context, test) {
@@ -45,7 +48,8 @@ TeamcityReporter <- R6::R6Class("TeamcityReporter", inherit = Reporter,
       if (!expectation_ok(result)) {
         lines <- strsplit(format(result), "\n")[[1]]
 
-        private$report_event("testFailed", testName, message = lines[1],
+        private$report_event(
+          "testFailed", testName, message = lines[1],
           details = paste(lines[-1], collapse = "\n")
         )
       }

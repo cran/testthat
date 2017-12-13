@@ -8,19 +8,19 @@ test_that("numeric types are compatible", {
 })
 
 test_that("non-numeric types are not compatible", {
-  expect_match(compare(1, "a")$message, "double vs character")
+  expect_match(compare(1, "a")$message, "double is not character")
 })
 
 test_that("base lengths must be identical", {
-  expect_match(compare(1, c(1, 2))$message, "1 vs 2")
+  expect_match(compare(1, c(1, 2))$message, "1 is not 2")
 })
 
 test_that("classes must be identical", {
   f1 <- factor("a")
   f2 <- factor("a", ordered = TRUE)
 
-  expect_match(compare(1L, f1)$message, "integer vs factor")
-  expect_match(compare(1L, f2)$message, "integer vs ordered/factor")
+  expect_match(compare(1L, f1)$message, "integer is not factor")
+  expect_match(compare(1L, f2)$message, "integer is not ordered/factor")
 })
 
 test_that("attributes must be identical", {
@@ -35,6 +35,16 @@ test_that("attributes must be identical", {
 
   expect_match(compare(x1, x4)$message, "target is NULL")
   expect_match(compare(x4, x5)$message, "Names: 1 string mismatch")
+})
+
+test_that("unless check.attributes is FALSE", {
+  x1 <- 1L
+  x2 <- c(a = 1L)
+  x3 <- structure(1L, a = 1)
+
+  expect_equal(compare(x1, x2, check.attributes = FALSE)$message, "Equal")
+  expect_equal(compare(x1, x3, check.attributes = FALSE)$message, "Equal")
+  expect_equal(compare(x2, x3, check.attributes = FALSE)$message, "Equal")
 })
 
 # Values ------------------------------------------------------------------

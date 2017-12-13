@@ -3,19 +3,23 @@
 \name{skip}
 \alias{skip}
 \alias{skip_if_not}
+\alias{skip_if}
 \alias{skip_if_not_installed}
-\alias{skip_on_appveyor}
-\alias{skip_on_bioc}
 \alias{skip_on_cran}
 \alias{skip_on_os}
 \alias{skip_on_travis}
+\alias{skip_on_appveyor}
+\alias{skip_on_bioc}
+\alias{skip_if_translated}
 \title{Skip a test.}
 \usage{
 skip(message)
 
 skip_if_not(condition, message = deparse(substitute(condition)))
 
-skip_if_not_installed(pkg)
+skip_if(condition, message = deparse(substitute(condition)))
+
+skip_if_not_installed(pkg, minimum_version = NULL)
 
 skip_on_cran()
 
@@ -26,14 +30,18 @@ skip_on_travis()
 skip_on_appveyor()
 
 skip_on_bioc()
+
+skip_if_translated()
 }
 \arguments{
 \item{message}{A message describing why the test was skipped.}
 
-\item{condition}{Boolean condition to check. If not \code{TRUE}, will
-skip the test.}
+\item{condition}{Boolean condition to check. \code{skip_if_not()} will skip if
+\code{FALSE}, \code{skip_if()} will skip if \code{TRUE}.}
 
 \item{pkg}{Name of package to check for}
+
+\item{minimum_version}{Minimum required version for the package}
 
 \item{os}{Character vector of system names. Supported values are
 \code{"windows"}, \code{"mac"}, \code{"linux"} and \code{"solaris"}.}
@@ -43,9 +51,16 @@ This function allows you to skip a test if it's not currently available.
 This will produce an informative message, but will not cause the test
 suite to fail.
 }
+\details{
+\code{skip*} functions are intended for use within \code{\link[=test_that]{test_that()}}
+blocks.  All expectations following the \code{skip*} statement within the
+same \code{test_that} block will be skipped.  Test summaries that report skip
+counts are reporting how many \code{test_that} blocks triggered a \code{skip*}
+statement, not how many expectations were skipped.
+}
 \section{Helpers}{
 
-\code{skip_if_not()} works like \code{\link{stopifnot}}, generating
+\code{skip_if_not()} works like \code{\link[=stopifnot]{stopifnot()}}, generating
 a message automatically based on the first argument.
 
 \code{skip_on_cran()} skips tests on CRAN, using the \code{NOT_CRAN}
@@ -61,9 +76,20 @@ environment variable set by devtools.
 \code{BBS_HOME} environment variable.
 
 \code{skip_if_not_installed()} skips a tests if a package is not installed
-(useful for suggested packages).
-}
-\examples{
-if (FALSE) skip("No internet connection")
+or cannot be loaded (useful for suggested packages).  It loads the package as
+a side effect, because the package is likely to be used anyway.
 }
 
+\examples{
+if (FALSE) skip("No internet connection")
+
+## The following are only meaningful when put in test files and
+## run with `test_file`, `test_dir`, `test_check`, etc.
+
+test_that("skip example", {
+  expect_equal(1, 1L)    # this expectation runs
+  skip('skip')
+  expect_equal(1, 2)     # this one skipped
+  expect_equal(1, 3)     # this one is also skipped
+})
+}

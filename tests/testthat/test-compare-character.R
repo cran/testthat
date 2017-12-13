@@ -3,18 +3,18 @@ context("compare.character")
 # Metadata ----------------------------------------------------------------
 
 test_that("types must be the same", {
-  expect_match(compare("a", 1L)$message, "character vs integer")
+  expect_match(compare("a", 1L)$message, "character is not integer")
 })
 
 test_that("base lengths must be identical", {
-  expect_match(compare("a", letters)$message, "1 vs 26")
+  expect_match(compare("a", letters)$message, "1 is not 26")
 })
 
 test_that("classes must be identical", {
   c1 <- "a"
   c2 <- structure("a", class = "mycharacter")
 
-  expect_match(compare(c1, c2)$message, "character vs mycharacter")
+  expect_match(compare(c1, c2)$message, "character is not mycharacter")
 })
 
 test_that("attributes must be identical", {
@@ -49,7 +49,7 @@ test_that("equal if both missing or both the same (multiple values)", {
 # Output ------------------------------------------------------------------
 
 test_that("computes correct number of mismatches", {
-  x <- mismatch_character(c("a","b","c"), c("c", "d", "e"))
+  x <- mismatch_character(c("a", "b", "c"), c("c", "d", "e"))
   expect_equal(x$n, 3)
 })
 
@@ -70,4 +70,11 @@ test_that("not all lines are shown", {
 
   expect_equal(lines[1], "1/1 mismatches")
   expect_equal(length(lines), 8)
+})
+
+test_that("vectors longer than `max_diffs` (#513)", {
+  comp <- compare(letters[1:2], LETTERS[1:2], max_diffs = 1)
+  expect_is(comp, "comparison")
+  expect_false(comp$equal)
+  expect_equal(comp$message, "2/2 mismatches\nx[1]: \"a\"\ny[1]: \"A\"")
 })

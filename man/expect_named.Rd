@@ -24,7 +24,7 @@ writing tests in loops).}
 
 \item{label}{object label. When \code{NULL}, computed from deparsed object.}
 
-\item{...}{Other arguments passed onto \code{has_names}.}
+\item{...}{Other arguments passed on to \code{\link[=has_names]{has_names()}}.}
 }
 \description{
 You can either check for the presence of names (leaving \code{expected}
@@ -46,10 +46,8 @@ expect_named(z, NULL)
 \seealso{
 Other expectations: \code{\link{comparison-expectations}},
   \code{\link{equality-expectations}},
-  \code{\link{expect_equal_to_reference}},
   \code{\link{expect_length}}, \code{\link{expect_match}},
   \code{\link{inheritance-expectations}},
   \code{\link{logical-expectations}},
   \code{\link{output-expectations}}
 }
-

@@ -1,6 +1,6 @@
 #' Provide human-readable comparison of two objects
 #'
-#' \code{compare} is similar to \code{\link[base]{all.equal}()}, but shows
+#' `compare` is similar to [base::all.equal()], but shows
 #' you examples of where the failures occured.
 #'
 #' @export
@@ -8,6 +8,7 @@
 #' @param tolerance Numerical tolerance: any differences smaller than this
 #'   value will be ignored.
 #' @param ... Additional arguments used to control specifics of comparison
+#' @keywords internal
 compare <- function(x, y, ...) {
   UseMethod("compare", x)
 }
@@ -43,39 +44,43 @@ print.comparison <- function(x, ...) {
 
 #' @export
 #' @rdname compare
-compare.default <- function(x, y, ...){
+compare.default <- function(x, y, ..., max_diffs = 9) {
   same <- all.equal(x, y, ...)
-  comparison(identical(same, TRUE), paste0(same, collapse = "\n"))
+  if (length(same) > max_diffs) {
+    same <- c(same[1:max_diffs], "...")
+  }
+
+  comparison(identical(same, TRUE), as.character(same))
 }
 
 print_out <- function(x, ...) {
-  lines <- utils::capture.output(print(x, ...))
+  lines <- capture_output_lines(x, ..., print = TRUE)
   paste0(lines, collapse = "\n")
 }
 
 # Common helpers ---------------------------------------------------------------
 
 same_length <- function(x, y) length(x) == length(y)
-diff_length <- function(x, y) difference(fmt = "Lengths differ: %i vs %i", length(x), length(y))
+diff_length <- function(x, y) difference(fmt = "Lengths differ: %i is not %i", length(x), length(y))
 
 same_type <- function(x, y) identical(typeof(x), typeof(y))
-diff_type <- function(x, y) difference(fmt = "Types not compatible: %s vs %s", typeof(x), typeof(y))
+diff_type <- function(x, y) difference(fmt = "Types not compatible: %s is not %s", typeof(x), typeof(y))
 
 same_class <- function(x, y) {
-  if (!is.object(x) && !is.object(y))
+  if (!is.object(x) && !is.object(y)) {
     return(TRUE)
+  }
   identical(class(x), class(y))
 }
 diff_class <- function(x, y) {
-  difference(fmt = "Classes differ: %s vs %s", klass(x), klass(y))
+  difference(fmt = "Classes differ: %s is not %s", klass(x), klass(y))
 }
 
 same_attr <- function(x, y) {
   is.null(attr.all.equal(x, y))
 }
 diff_attr <- function(x, y) {
-  old <- options(useFancyQuotes = FALSE)
-  on.exit(options(old), add = TRUE)
+  withr::local_options(list(useFancyQuotes = FALSE))
 
   out <- attr.all.equal(x, y)
   difference(out)
@@ -88,4 +93,3 @@ vector_equal <- function(x, y) {
 vector_equal_tol <- function(x, y, tolerance = .Machine$double.eps ^ 0.5) {
   (is.na(x) & is.na(y)) | (!is.na(x) & !is.na(y) & abs(x - y) < tolerance)
 }
-

@@ -15,27 +15,17 @@ null <- function(...) invisible()
 
 klass <- function(x) paste(class(x), collapse = "/")
 
-rule <- function(..., pad = "-") {
-  if (nargs() == 0) {
-    title <- ""
+first_last <- function(x, max = 10, filler = "...") {
+  if (length(x) <= 2 * max + 1) {
+    x
   } else {
-    title <- paste0(..., " ")
+    c(
+      x[seq_len(max)],
+      filler,
+      x[seq.int(to = length(x), length.out = max)]
+    )
   }
-  width <- getOption("width") - nchar(title)
-
-  cat(title, paste(rep(pad, width, collapse = "")), "\n", sep = "")
 }
-
-safe_read_lines <- function(file) {
-  tryCatch(
-    readLines(file, warn = FALSE),
-    error = function(e) {
-      warning(conditionMessage(e), call. = NULL)
-      character()
-    }
-  )
-}
-
 
 # Tools for finding srcrefs -----------------------------------------------
 
@@ -58,15 +48,16 @@ show_stack <- function(star = integer(), n = sys.nframe() - 1L) {
 }
 
 env_name <- function(x) {
-  str <- utils::capture.output(print(x))
+  str <- capture_output(x, print = TRUE)
   gsub("<environment: |>", "", str)
 }
 
 find_first_srcref <- function(calls) {
   for (call in calls) {
-    srcref <- attr(call, 'srcref')
-    if (!is.null(srcref))
+    srcref <- attr(call, "srcref")
+    if (!is.null(srcref)) {
       return(srcref)
+    }
   }
   NULL
 }
@@ -79,4 +70,14 @@ f_name <- function(x) {
   } else {
     ""
   }
+}
+
+escape_regex <- function(x) {
+  chars <- c("*", ".", "?", "^", "+", "$", "|", "(", ")", "[", "]", "{", "}", "\\")
+  gsub(paste0("([\\", paste0(collapse = "\\", chars), "])"), "\\\\\\1", x, perl = TRUE)
+}
+
+# For R 3.1
+dir.exists <- function(paths) {
+  file.exists(paths) & file.info(paths)$isdir
 }

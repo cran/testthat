@@ -4,8 +4,9 @@
 \alias{test_file}
 \title{Run all tests in specified file.}
 \usage{
-test_file(path, reporter = "summary", env = test_env(),
-  start_end_reporter = TRUE, load_helpers = TRUE)
+test_file(path, reporter = default_reporter(), env = test_env(),
+  start_end_reporter = TRUE, load_helpers = TRUE, encoding = "unknown",
+  wrap = TRUE)
 }
 \arguments{
 \item{path}{path to file}
@@ -17,6 +18,12 @@ test_file(path, reporter = "summary", env = test_env(),
 \item{start_end_reporter}{whether to start and end the reporter}
 
 \item{load_helpers}{Source helper files before running the tests?}
+
+\item{encoding}{File encoding, default is "unknown"
+\code{unknown}.}
+
+\item{wrap}{Automatically wrap all code within \code{\link[=test_that]{test_that()}}? This ensures
+that all expectations are reported, even if outside a test block.}
 }
 \value{
 the results as a "testthat_results" (list)
@@ -24,4 +31,3 @@ the results as a "testthat_results" (list)
 \description{
 Run all tests in specified file.
 }
-

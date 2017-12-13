@@ -7,7 +7,9 @@ NULL
 #' adding a custom reporter without removing the current one.
 #'
 #' @export
-MultiReporter <- R6::R6Class("MultiReporter", inherit = Reporter,
+#' @family reporters
+MultiReporter <- R6::R6Class("MultiReporter",
+  inherit = Reporter,
   public = list(
     reporters = list(),
 
@@ -43,4 +45,3 @@ MultiReporter <- R6::R6Class("MultiReporter", inherit = Reporter,
 o_apply <- function(objects, method, ...) {
   lapply(objects, function(x) x[[method]](...))
 }
-

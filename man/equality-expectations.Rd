@@ -3,17 +3,28 @@
 \name{equality-expectations}
 \alias{equality-expectations}
 \alias{expect_equal}
+\alias{expect_setequal}
 \alias{expect_equivalent}
 \alias{expect_identical}
+\alias{expect_identical}
+\alias{expect_reference}
 \title{Expectation: is the object equal to a value?}
 \usage{
 expect_equal(object, expected, ..., info = NULL, label = NULL,
   expected.label = NULL)
 
-expect_equivalent(object, expected, info = NULL, label = NULL,
+expect_setequal(object, expected)
+
+expect_equivalent(object, expected, ..., info = NULL, label = NULL,
   expected.label = NULL)
 
 expect_identical(object, expected, info = NULL, label = NULL,
+  expected.label = NULL)
+
+expect_identical(object, expected, info = NULL, label = NULL,
+  expected.label = NULL)
+
+expect_reference(object, expected, info = NULL, label = NULL,
   expected.label = NULL)
 }
 \arguments{
@@ -21,7 +32,7 @@ expect_identical(object, expected, info = NULL, label = NULL,
 
 \item{expected}{Expected value}
 
-\item{...}{other values passed to \code{\link{all.equal}}}
+\item{...}{other values passed to \code{\link[=all.equal]{all.equal()}}}
 
 \item{info}{extra information to be included in the message (useful when
 writing tests in loops).}
@@ -32,10 +43,13 @@ writing tests in loops).}
 }
 \description{
 \itemize{
-\item \code{expect_identical} tests with \code{\link{identical}}
-\item \code{expect_equal} tests with \code{\link{all.equal}}
-\item \code{expect_equivalent} tests with \code{\link{all.equal}} and
-  \code{check.attributes = FALSE}
+\item \code{expect_identical} tests with \code{\link[=identical]{identical()}}
+\item \code{expect_equal} tests with \code{\link[=all.equal]{all.equal()}}
+\item \code{expect_setequal} ignores order and duplicates
+\item \code{expect_equivalent} tests with \code{\link[=all.equal]{all.equal()}} and
+\code{check.attributes = FALSE}
+\item \code{expect_reference} tests if two symbols point to the same underlying
+object in memory (requires rlang 1.2.9000 or greater)
 }
 }
 \examples{
@@ -69,11 +83,9 @@ expect_equivalent(a, b)
 }
 \seealso{
 Other expectations: \code{\link{comparison-expectations}},
-  \code{\link{expect_equal_to_reference}},
   \code{\link{expect_length}}, \code{\link{expect_match}},
   \code{\link{expect_named}},
   \code{\link{inheritance-expectations}},
   \code{\link{logical-expectations}},
   \code{\link{output-expectations}}
 }
-

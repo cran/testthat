@@ -1,47 +1,65 @@
 context("test_dir")
 
-test_that('test_dir()', {
-  res <- test_dir(test_path('test_dir'), reporter = 'silent')
-  df <- as.data.frame(res)
-
-  expected <-
-    data.frame(file = c("test-basic.R", "test-basic.R", "test-basic.R",
-        "test-basic.R", "test-basic.R", "test-empty.R", "test-empty.R",
-        "test-errors.R", "test-errors.R", "test-errors.R", "test-errors.R",
-        "test-errors.R", "test-failures.R", "test-failures.R", "test-failures.R",
-        "test-helper.R", "test-skip.R"),
-      context = c("Basic", "Basic", "Basic", "Basic",
-        "Basic", "empty", "empty", "error", "error", "error", "error",
-        "error", "failures", "failures", "failures", "helper", "skip"),
-      test = c("logical tests act as expected",
-        "logical tests ignore attributes", "equality holds",
-        "can't access variables from other tests 2",
-        "can't access variables from other tests 1", "empty test",
-        "empty test with error",
-        "simple", "after one success", "after one failure", "in the test",
-        "in expect_error", "just one failure", "one failure on two",
-        "no failure", "helper test",
-        "Skips skip"),
-      nb = c(2L, 2L, 2L, 0L, 1L, 0L, 0L, 0L, 1L, 1L, 0L, 1L, 1L, 2L, 2L, 1L, 1L),
-      failed = c(0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 1L, 0L, 0L, 1L, 1L, 0L, 0L, 0L),
-      skipped = c(FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,
-        FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, TRUE),
-      error = c(FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, TRUE,
-        TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE),
-      stringsAsFactors = FALSE)
-
-  df$user <- df$system  <- df$real <- NULL
-  expect_identical(df, expected)
+test_that("R_TESTS envar is unset", {
+  expect_equal(Sys.getenv("R_TESTS"), "")
 })
 
-test_that('test_dir() filter', {
-  res <- test_dir('test_dir', reporter = 'silent', filter = 'basic|empty')
-  df <- as.data.frame(res)
-  expect_identical(unique(df$context),  c("Basic", "empty"))
+test_that("TESTHAT env var set to true", {
+  expect_true(is_testing())
 })
 
-test_that('test_dir() helpers', {
-  res <- test_dir('test_dir', reporter = 'silent', filter = 'helper')
+test_that("test_dir()", {
+  res <- test_dir(test_path("test_dir"), reporter = "silent")
+
+  df <- as.data.frame(res)
+  df$user <- df$system <- df$real <- NULL
+
+  expect_known_value(df, "test_dir.rds")
+})
+
+test_that("test_dir() filter", {
+  res <- test_dir("test_dir", reporter = "silent", filter = "basic|empty")
+  df <- as.data.frame(res)
+  expect_identical(unique(df$context), c("Basic", "empty"))
+})
+
+test_that("test_dir() helpers", {
+  res <- test_dir("test_dir", reporter = "silent", filter = "helper")
   df <- as.data.frame(res)
   expect_true(all(!df$error & df$failed == 0))
+})
+
+test_that("filter_test_scripts() with tricky names", {
+  files <- c(
+    "test-basic.R", "test-blah.really.Rtrick.R", "test-hello.rtest.R"
+  )
+
+  expect_equal(filter_test_scripts(files, filter = "basic|Rtrick|rtest"), files)
+  expect_equal(filter_test_scripts(files, filter = "Rtrick|rtest"), files[2:3])
+  expect_equal(
+    filter_test_scripts(files, filter = "Rtrick|rtest", invert = TRUE),
+    files[1]
+  )
+})
+
+
+# errors ------------------------------------------------------------------
+
+test_that("can control if failures generate errors", {
+  test_error <- function(...) {
+    test_dir(test_path("test-error"), reporter = "silent", ...)
+  }
+
+  expect_error(test_error(stop_on_failure = TRUE), "Test failures")
+  expect_error(test_error(stop_on_failure = FALSE), NA)
+})
+
+
+test_that("can control if warnings errors", {
+  test_warning <- function(...) {
+    test_dir(test_path("test-warning"), reporter = "silent", ...)
+  }
+
+  expect_error(test_warning(stop_on_warning = TRUE), "Tests generated warnings")
+  expect_error(test_warning(stop_on_warning = FALSE), NA)
 })

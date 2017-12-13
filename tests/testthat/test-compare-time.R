@@ -10,19 +10,19 @@ test_that("both POSIXt classes are compatible", {
 })
 
 test_that("other classes are not", {
-  expect_match(compare(Sys.time(), 1)$message, "POSIXct/POSIXt vs numeric")
+  expect_match(compare(Sys.time(), 1)$message, "POSIXct/POSIXt is not numeric")
 })
 
 test_that("base lengths must be identical", {
   x1 <- Sys.time()
   x2 <- c(x1, x1 - 3600)
 
-  expect_match(compare(x1, x2)$message, "1 vs 2")
+  expect_match(compare(x1, x2)$message, "1 is not 2")
 })
 
 test_that("tzones must be identical", {
-  t1 <- ISOdatetime(2016,2,29,12,13,14,'EST')
-  t2 <- ISOdatetime(2016,2,29,12,13,14,'US/Eastern')
+  t1 <- ISOdatetime(2016, 2, 29, 12, 13, 14, "EST")
+  t2 <- ISOdatetime(2016, 2, 29, 12, 13, 14, "US/Eastern")
 
   expect_match(compare(t1, t2)$message, '"tzone": 1 string mismatch')
 })

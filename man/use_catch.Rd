@@ -16,23 +16,22 @@ in \R packages with
 }
 \details{
 Calling \code{use_catch()} will:
-
 \enumerate{
-
 \item Create a file \code{src/test-runner.cpp}, which ensures that the
-        \code{testthat} package will understand how to run your package's
-        unit tests,
-
+\code{testthat} package will understand how to run your package's
+unit tests,
 \item Create an example test file \code{src/test-example.cpp}, which
-        showcases how you might use Catch to write a unit test, and
-
+showcases how you might use Catch to write a unit test,
 \item Add a test file \code{tests/testthat/test-cpp.R}, which ensures that
-        \code{testthat} will run your compiled tests during invocations of
-        \code{devtools::test()} or \code{R CMD check}.
+\code{testthat} will run your compiled tests during invocations of
+\code{devtools::test()} or \code{R CMD check}, and
+\item Create a file \code{R/catch-routine-registration.R}, which ensures that
+\R will automatically register this routine when
+\code{tools::package_native_routine_registration_skeleton()} is invoked.
 }
 
 C++ unit tests can be added to C++ source files within the
-\code{src/} directory of your package, with a format similar
+\code{src} directory of your package, with a format similar
 to \R code tested with \code{testthat}. Here's a simple example
 of a unit test written with \code{testthat} + Catch:
 
@@ -78,6 +77,25 @@ currently unsupported by Catch). This should make it
 easier to submit packages to CRAN that use Catch.
 }
 
+\section{Symbol Registration}{
+
+
+If you've opted to disable dynamic symbol lookup in your
+package, then you'll need to explicitly export a symbol
+in your package that \code{testthat} can use to run your unit
+tests. \code{testthat} will look for a routine with one of the names:
+
+\preformatted{
+    C_run_testthat_tests
+    c_run_testthat_tests
+    run_testthat_tests
+}
+
+See \href{https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Controlling-visibility}{Controlling Visibility}
+and \href{https://cran.r-project.org/doc/manuals/r-release/R-exts.html#Registering-symbols}{Registering Symbols}
+in the \strong{Writing R Extensions} manual for more information.
+}
+
 \section{Advanced Usage}{
 
 
@@ -114,8 +132,8 @@ by inserting a call to:
 
 as necessary within your unit test suite.
 }
+
 \seealso{
 \href{https://github.com/philsquared/Catch}{Catch}, the
-  library used to enable C++ unit testing.
+library used to enable C++ unit testing.
 }
-

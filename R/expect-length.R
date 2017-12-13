@@ -13,20 +13,14 @@
 #' }
 expect_length <- function(object, n) {
   stopifnot(is.numeric(n), length(n) == 1)
-  lab <- label(object)
 
-  if (!is_vector(object)) {
-    fail(sprintf("%s is not a vector.", lab))
-  }
+  act <- quasi_label(enquo(object))
+  act$n <- length(act$val)
 
   expect(
-    length(object) == n,
-    sprintf("%s has length %i, not length %i.", lab, length(object), n)
+    act$n == n,
+    sprintf("%s has length %i, not length %i.", act$lab, act$n, n)
   )
 
-  invisible(object)
-}
-
-is_vector <- function(x) {
-  typeof(x) %in% c("logical", "integer", "double", "complex", "character", "raw", "list")
+  invisible(act$val)
 }

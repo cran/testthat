@@ -1,36 +1,18 @@
-#' Expectation class.
+#' The building block of all `expect_` functions
 #'
-#' You generate an expectation object with \code{expectation}, and signal
-#' an expectation with \code{expect}. If you're making your own expectation
-#' function, you'll typically call \code{expect(condition, "failure message")}.
-#' See the source code for the built-in expectations for details.
+#' Use this if you are writing your own expectation. See
+#' `vignette("custom-expectation")` for details
 #'
-#' @param passed a single logical value indicating whether the test passed
-#'  (\code{TRUE}), failed (\code{FALSE}), or threw an error (\code{NA})
-#' @param message A text description of failure
-#' @param srcref Source reference, if known
-#' @keywords internal
+#' @param ok Was the expectation successful?
+#' @param failure_message What message should be shown if the expectation was
+#'   not successful?
+#' @param info Additional information. Included for backward compatibility
+#'   only and new expectations should not use it.
+#' @param srcref Only needed in very rare circumstances where you need to
+#'   forward a srcref captured elsewhere.
 #' @export
-expectation <- function(type, message, srcref = NULL) {
-  type <- match.arg(type, c("success", "failure", "error", "skip", "warning"))
-
-  structure(
-    list(
-      message = message,
-      srcref = srcref
-    ),
-    class = c(
-      paste0("expectation_", type),
-      "expectation",
-      "condition"
-    )
-  )
-}
-
-#' @rdname expectation
-#' @export
-expect <- function(exp, ..., srcref = NULL) {
-  exp <- as.expectation(exp, ..., srcref = srcref)
+expect <- function(ok, failure_message, info = NULL, srcref = NULL) {
+  exp <- as.expectation.logical(ok, failure_message, info = info, srcref = srcref)
 
   withRestarts(
     if (expectation_broken(exp)) {
@@ -44,17 +26,82 @@ expect <- function(exp, ..., srcref = NULL) {
   invisible(exp)
 }
 
-make_label <- function(object, label = NULL) {
-  label %||% label(object)
+#' Construct an expectation object
+#'
+#' For advanced use only.
+#'
+#' @keywords internal
+#' @export
+expectation <- function(type, message, srcref = NULL) {
+  type <- match.arg(type, c("success", "failure", "error", "skip", "warning"))
+
+  structure(
+    list(
+      message = message,
+      srcref = srcref
+    ),
+    class = c(
+      paste0("expectation_", type),
+      "expectation",
+      # Make broken expectations catchable by try()
+      if (type %in% c("failure", "error")) "error",
+      "condition"
+    )
+  )
 }
 
-add_info <- function(message, info = NULL) {
-  paste(message, info, sep = "\n")
+#' @export
+#' @rdname expectation
+#' @param x object to test for class membership
+is.expectation <- function(x) inherits(x, "expectation")
+
+#' Quasi-labelling
+#'
+#' The first argument to every `expect_` function can use unquoting to
+#' construct better labels. This makes it easy to create informative labels
+#' expectations are used inside a function or a for loop. `quasi_label()` wraps
+#' up the details, returning the expression and label.
+#'
+#' @param quo A quosure created by `rlang::enquo()`.
+#' @param label An optional label to override the default. This is
+#'   only provided for internal usage. Modern expectations should not
+#'   include a `label` parameter.
+#' @keywords internal
+#' @return A list containing two elements:
+#' \item{val}{The evaluate value of `quo`}
+#' \item{lab}{The quasiquoted label generated from `quo`}
+#' @export
+#' @examples
+#' f <- function(i) if (i > 3) i * 9 else i * 10
+#' i <- 10
+#'
+#' # This short of expression commonly occurs inside a for loop or function
+#' # And the failure isn't helpful because you can't see the value of i
+#' # that caused the problem:
+#' show_failure(expect_equal(f(i), i * 10))
+#'
+#' # To overcome this issue, testthat allows you to unquote expressions using
+#' # !!. This causes the failure message to show the value rather than the
+#' # variable name
+#' show_failure(expect_equal(f(!!i), !!(i * 10)))
+quasi_label <- function(quo, label = NULL) {
+  force(quo)
+
+  list(
+    val = eval_bare(get_expr(quo), get_env(quo)),
+    lab = label %||% expr_label(get_expr(quo))
+  )
 }
 
-label <- function(x) {
-  x <- find_label(x)
+quasi_capture <- function(quo, capture, label = NULL) {
+  act <- list()
+  act$lab <- label %||% quo_label(quo)
+  act$cap <- capture(act$val <- eval_bare(get_expr(quo), get_env(quo)))
 
+  act
+}
+
+expr_label <- function(x) {
   if (is.character(x)) {
     encodeString(x, quote = '"')
   } else if (is.atomic(x)) {
@@ -64,15 +111,15 @@ label <- function(x) {
   } else {
     chr <- deparse(x)
     if (length(chr) > 1) {
-      chr <- paste(deparse(as.call(list(x[[1]], quote(...)))), collapse = "\n")
+      if (identical(x[[1]], quote(`function`))) {
+        x[[3]] <- quote(...)
+        chr <- paste(deparse(x), collapse = "\n")
+      } else {
+        chr <- paste(deparse(as.call(list(x[[1]], quote(...)))), collapse = "\n")
+      }
     }
     chr
   }
-}
-
-#' @useDynLib testthat find_label_
-find_label <- function(x) {
-  .Call(find_label_, quote(x), environment())
 }
 
 expectation_type <- function(exp) {
@@ -113,8 +160,10 @@ as.expectation <- function(x, ...) UseMethod("as.expectation", x)
 
 #' @export
 as.expectation.default <- function(x, ..., srcref = NULL) {
-  stop("Don't know how to convert '", paste(class(x), collapse = "', '"),
-       "' to expectation.", call. = FALSE)
+  stop(
+    "Don't know how to convert '", paste(class(x), collapse = "', '"),
+    "' to expectation.", call. = FALSE
+  )
 }
 
 #' @export
@@ -128,13 +177,17 @@ as.expectation.expectation <- function(x, ..., srcref = NULL) {
 #' @export
 as.expectation.logical <- function(x, message, ..., srcref = NULL, info = NULL) {
   type <- if (x) "success" else "failure"
-  expectation(type, add_info(message, info), srcref = srcref)
+  message <- if (x) "success" else add_info(message, info)
+  expectation(type, message, srcref = srcref)
+}
+
+add_info <- function(message, info = NULL) {
+  paste(c(message, info), collapse = "\n")
 }
 
 #' @export
 as.expectation.error <- function(x, ..., srcref = NULL) {
   error <- x$message
-  calls <- x$call
 
   msg <- gsub("Error.*?: ", "", as.character(error))
 
@@ -162,11 +215,6 @@ as.expectation.skip <- function(x, ..., srcref = NULL) {
 
   expectation("skip", msg, srcref)
 }
-
-#' @export
-#' @rdname expectation
-#' @param x object to test for class membership
-is.expectation <- function(x) inherits(x, "expectation")
 
 #' @export
 print.expectation <- function(x, ...) cat(format(x), "\n")

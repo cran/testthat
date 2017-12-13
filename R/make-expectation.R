@@ -5,8 +5,9 @@
 #'
 #' @param x a vector of values
 #' @param expectation the type of equality you want to test for
-#'   (\code{equals}, \code{is_equivalent_to}, \code{is_identical_to})
+#'   (`"equals"`, `"is_equivalent_to"`, `"is_identical_to"`)
 #' @export
+#' @keywords internal
 #' @examples
 #' x <- 1:10
 #' make_expectation(x)
@@ -17,9 +18,13 @@
 #' make_expectation(df)
 make_expectation <- function(x, expectation = "equals") {
   obj <- substitute(x)
-  expectation <- match.arg(expectation,
-    c("equals", "is_equivalent_to", "is_identical_to"))
+  expectation <- match.arg(
+    expectation,
+    c("equals", "is_equivalent_to", "is_identical_to")
+  )
 
-  dput(substitute(expect_equal(obj, values),
-    list(obj = obj, expectation = as.name(expectation), values = x)))
+  dput(substitute(
+    expect_equal(obj, values),
+    list(obj = obj, expectation = as.name(expectation), values = x)
+  ))
 }

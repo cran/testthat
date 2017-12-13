@@ -6,7 +6,7 @@ NULL
 #' Changes global reporter to that specified, runs code and the returns
 #' global reporter back to previous value.
 #'
-#' The \code{with_reporter} function returns the reporter that has been used
+#' The `with_reporter()` function returns the reporter that has been used
 #' for running the code.
 #'
 #' @keywords internal
@@ -58,7 +58,7 @@ with_reporter <- function(reporter, code, start_end_reporter = TRUE) {
 #' Find reporter object given name or object.
 #'
 #' If not found, will return informative error message.
-#' Pass a character vector to create a \code{\link{MultiReporter}} composed
+#' Pass a character vector to create a [MultiReporter] composed
 #' of individual reporters.
 #' Will return null if given NULL.
 #'
@@ -82,7 +82,7 @@ find_reporter <- function(reporter) {
   }
 }
 
-find_reporter_one <- function(reporter) {
+find_reporter_one <- function(reporter, ...) {
   stopifnot(is.character(reporter))
 
   name <- reporter
@@ -93,5 +93,5 @@ find_reporter_one <- function(reporter) {
     stop("Can not find test reporter ", reporter, call. = FALSE)
   }
 
-  get(name)$new()
+  get(name)$new(...)
 }

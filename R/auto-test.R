@@ -1,37 +1,36 @@
 #' Watches code and tests for changes, rerunning tests as appropriate.
 #'
-#' The idea behind \code{auto_test} is that you just leave it running while
+#' The idea behind `auto_test()` is that you just leave it running while
 #' you develop your code.  Everytime you save a file it will be automatically
 #' tested and you can easily see if your changes have caused any test
 #'  failures.
 #'
 #' The current strategy for rerunning tests is as follows:
 #'
-#' \itemize{
-#'  \item if any code has changed, then those files are reloaded and all tests
-#'    rerun
-#'  \item otherwise, each new or modified test is run
-#' }
-#' In the future, \code{auto_test} might implement one of the following more
+#' - if any code has changed, then those files are reloaded and all tests
+#'   rerun
+#' - otherwise, each new or modified test is run
+#'
+#' In the future, `auto_test()` might implement one of the following more
 #' intelligent alternatives:
 #'
-#' \itemize{
-#'  \item Use codetools to build up dependency tree and then rerun tests only
-#'    when a dependency changes.
-#'
-#'  \item Mimic ruby's autotest and rerun only failing tests until they pass,
-#'    and then rerun all tests.
-#' }
+#' - Use codetools to build up dependency tree and then rerun tests only
+#'   when a dependency changes.
+#' - Mimic ruby's autotest and rerun only failing tests until they pass,
+#'   and then rerun all tests.
 #
-#' @seealso \code{\link{auto_test_package}}
+#' @seealso [auto_test_package()]
 #' @export
 #' @param code_path path to directory containing code
 #' @param test_path path to directory containing tests
 #' @param reporter test reporter to use
 #' @param env environment in which to execute test suite.
+#' @param hash Passed on to [watch()]. When FALSE, uses less accurate
+#'   modification time stamps, but those are faster for large files.
 #' @keywords debugging
-auto_test <- function(code_path, test_path, reporter = "summary",
-                      env = test_env()) {
+auto_test <- function(code_path, test_path, reporter = default_reporter(),
+                      env = test_env(),
+                      hash = TRUE) {
   reporter <- find_reporter(reporter)
   code_path <- normalizePath(code_path)
   test_path <- normalizePath(test_path)
@@ -61,8 +60,7 @@ auto_test <- function(code_path, test_path, reporter = "summary",
 
     TRUE
   }
-  watch(c(code_path, test_path), watcher)
-
+  watch(c(code_path, test_path), watcher, hash = hash)
 }
 
 #' Watches a package for changes, rerunning tests as appropriate.
@@ -70,19 +68,23 @@ auto_test <- function(code_path, test_path, reporter = "summary",
 #' @param pkg path to package
 #' @export
 #' @param reporter test reporter to use
+#' @param hash Passed on to [watch()].  When FALSE, uses less accurate
+#'   modification time stamps, but those are faster for large files.
 #' @keywords debugging
-#' @seealso \code{\link{auto_test}} for details on how method works
-auto_test_package <- function(pkg = ".", reporter = "summary") {
+#' @seealso [auto_test()] for details on how method works
+auto_test_package <- function(pkg = ".", reporter = default_reporter(), hash = TRUE) {
   if (!requireNamespace("devtools", quietly = TRUE)) {
-    stop("devtools required to run auto_test_package(). Please install.",
-      call. = FALSE)
+    stop(
+      "devtools required to run auto_test_package(). Please install.",
+      call. = FALSE
+    )
   }
 
   pkg <- devtools::as.package(pkg)
 
   reporter <- find_reporter(reporter)
-  code_path <- file.path(pkg$path, "R")
-  test_path <- file.path(pkg$path, "tests", "testthat")
+  code_path <- normalizePath(file.path(pkg$path, "R"))
+  test_path <- normalizePath(file.path(pkg$path, "tests", "testthat"))
 
   # Start by loading all code and running all tests
   env <- devtools::load_all(pkg)$env
@@ -118,7 +120,5 @@ auto_test_package <- function(pkg = ".", reporter = "summary") {
 
     TRUE
   }
-  watch(c(code_path, test_path), watcher)
-
+  watch(c(code_path, test_path), watcher, hash = hash)
 }
-

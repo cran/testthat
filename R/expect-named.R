@@ -1,17 +1,17 @@
 #' Expectation: does object have names?
 #'
-#' You can either check for the presence of names (leaving \code{expected}
+#' You can either check for the presence of names (leaving `expected`
 #' blank), specific names (by suppling a vector of names), or absence of
-#' names (with \code{NULL}).
+#' names (with `NULL`).
 #'
 #' @inheritParams expect_that
 #' @param expected Character vector of expected names. Leave missing to
-#'   match any names. Use \code{NULL} to check for absence of names.
-#' @param ignore.order If \code{TRUE}, sorts names before comparing to
+#'   match any names. Use `NULL` to check for absence of names.
+#' @param ignore.order If `TRUE`, sorts names before comparing to
 #'   ignore the effect of order.
-#' @param ignore.case If \code{TRUE}, lowercases all names to ignore the
+#' @param ignore.case If `TRUE`, lowercases all names to ignore the
 #'   effect of case.
-#' @param ... Other arguments passed onto \code{has_names}.
+#' @param ... Other arguments passed on to [has_names()].
 #' @family expectations
 #' @export
 #' @examples
@@ -28,36 +28,37 @@
 expect_named <- function(object, expected, ignore.order = FALSE,
                          ignore.case = FALSE, info = NULL,
                          label = NULL) {
-
-  lab <- make_label(object, label)
+  act <- quasi_label(enquo(object), label = label)
+  act$names <- names(act$val)
 
   if (missing(expected)) {
     expect(
-      !identical(names(object), NULL),
-      sprintf("%s does not have names.", lab)
+      !identical(act$names, NULL),
+      sprintf("%s does not have names.", act$lab)
     )
   } else {
-    exp <- normalise_names(expected, ignore.order, ignore.case)
-    act <- normalise_names(names(object), ignore.order, ignore.case)
+    exp_names <- normalise_names(expected, ignore.order, ignore.case)
+    act$names <- normalise_names(act$names, ignore.order, ignore.case)
 
     expect(
-      identical(exp, act),
-      sprintf("Names of %s (%s) don't match %s",
-        lab,
-        paste0("'", act, "'", collapse = ", "),
-        paste0("'", exp, "'", collapse = ", ")
+      identical(act$names, exp_names),
+      sprintf(
+        "Names of %s (%s) don't match %s",
+        act$lab,
+        paste0("'", act$names, "'", collapse = ", "),
+        paste0("'", exp_names, "'", collapse = ", ")
       ),
       info = info
     )
   }
-  invisible(object)
+  invisible(act$val)
 }
 
 normalise_names <- function(x, ignore.order = FALSE, ignore.case = FALSE) {
   if (is.null(x)) return()
 
   if (ignore.order) x <- sort(x)
-  if (ignore.case)  x <- tolower(x)
+  if (ignore.case) x <- tolower(x)
 
   x
 }

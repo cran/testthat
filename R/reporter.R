@@ -17,35 +17,28 @@ Reporter <- R6::R6Class("Reporter",
     end_test =       function(context, test) {},
     end_context =    function(context) {},
     end_reporter =   function() {},
+    is_full =        function() FALSE,
 
     out = NULL,
 
-    initialize = function() {
-      self$out <- stdout()
-    },
-
-    cat = function(..., file = NULL, sep = " ", fill = FALSE, labels = NULL,
-                   append = NULL) {
-      if (!is.null(file)) {
-        warning("file ignored", call. = FALSE)
+    initialize = function(file = getOption("testthat.output_file", stdout())) {
+      self$out <- file
+      if (is.character(self$out) && file.exists(self$out)) {
+        # If writing to a file, overwrite it if it exists
+        file.remove(self$out)
       }
-      if (!is.null(append)) {
-        warning("append ignored", call. = FALSE)
-      }
-
-      cat(..., file = self$out, sep = sep, fill = fill, labels = labels)
     },
 
     cat_tight = function(...) {
-      self$cat(..., sep = "")
+      cat(..., sep = "", file = self$out, append = TRUE)
     },
 
     cat_line = function(...) {
-      self$cat_tight(..., "\n")
+      cli::cat_line(..., file = self$out)
     },
 
-    cat_paragraph = function(...) {
-      self$cat_tight(..., "\n\n")
+    rule = function(...) {
+      cli::cat_rule(..., file = self$out)
     },
 
     # The hierarchy of contexts are implied - a context starts with a
@@ -55,7 +48,6 @@ Reporter <- R6::R6Class("Reporter",
     # in the same way as tests and expectations.
     .context = NULL,
     .start_context = function(context) {
-
       if (!is.null(self$.context)) {
         self$end_context(self$.context)
       }
@@ -73,3 +65,33 @@ Reporter <- R6::R6Class("Reporter",
     }
   )
 )
+
+fancy_line <- function(x) {
+  if (!l10n_info()$`UTF-8`) {
+    return(x)
+  }
+
+  switch(x,
+    "-" = "\u2500",
+    "=" = "\u2550",
+    x
+  )
+}
+
+#' Retrieve the default reporter.
+#'
+#' The defaults are:
+#' * [SummaryReporter] for interactive; override with `testthat.default_reporter`
+#' * [CheckReporter] for R CMD check; override with `testthat.default_check_reporter`
+#'
+#' @export
+#' @keywords internal
+default_reporter <- function() {
+  getOption("testthat.default_reporter", "progress")
+}
+
+#' @export
+#' @rdname default_reporter
+check_repoter <- function() {
+  getOption("testthat.default_check_reporter", "check")
+}

@@ -5,16 +5,18 @@ NULL
 #'
 #' This reporter quietly runs all tests, simply gathering all expectations.
 #' This is helpful for programmatically inspecting errors after a test run.
-#' You can retrieve the results with the \code{expectations()}
+#' You can retrieve the results with the `expectations()`
 #' method.
 #'
 #' @export
-SilentReporter <- R6::R6Class("SilentReporter", inherit = Reporter,
+#' @family reporters
+SilentReporter <- R6::R6Class("SilentReporter",
+  inherit = Reporter,
   public = list(
     .expectations = NULL,
 
-    initialize = function() {
-      super$initialize()
+    initialize = function(...) {
+      super$initialize(...)
       self$.expectations <- Stack$new()
     },
 
