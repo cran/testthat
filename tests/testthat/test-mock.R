@@ -1,5 +1,3 @@
-context("Mock")
-
 test_that("can make 3 = 5", {
   with_mock(
     compare = function(x, y, ...) list(equal = TRUE, message = "TRUE"),
@@ -120,4 +118,17 @@ test_that("mocks can access local variables", {
       value
     }
   )
+})
+
+
+# local_mock --------------------------------------------------------------
+
+test_that("local_mock operates locally", {
+  f <- function() {
+    local_mock(compare = function(x, y) FALSE)
+    compare(1, 1)
+  }
+
+  expect_false(f())
+  expect_equal(compare(1, 1), no_difference())
 })

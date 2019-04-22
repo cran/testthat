@@ -5,10 +5,12 @@
 \alias{skip_if_not}
 \alias{skip_if}
 \alias{skip_if_not_installed}
+\alias{skip_if_offline}
 \alias{skip_on_cran}
 \alias{skip_on_os}
 \alias{skip_on_travis}
 \alias{skip_on_appveyor}
+\alias{skip_on_ci}
 \alias{skip_on_bioc}
 \alias{skip_if_translated}
 \title{Skip a test.}
@@ -21,6 +23,8 @@ skip_if(condition, message = deparse(substitute(condition)))
 
 skip_if_not_installed(pkg, minimum_version = NULL)
 
+skip_if_offline(host = "r-project.org")
+
 skip_on_cran()
 
 skip_on_os(os)
@@ -28,6 +32,8 @@ skip_on_os(os)
 skip_on_travis()
 
 skip_on_appveyor()
+
+skip_on_ci()
 
 skip_on_bioc()
 
@@ -42,6 +48,8 @@ skip_if_translated()
 \item{pkg}{Name of package to check for}
 
 \item{minimum_version}{Minimum required version for the package}
+
+\item{host}{A string with a hostname to lookup}
 
 \item{os}{Character vector of system names. Supported values are
 \code{"windows"}, \code{"mac"}, \code{"linux"} and \code{"solaris"}.}
@@ -63,6 +71,9 @@ statement, not how many expectations were skipped.
 \code{skip_if_not()} works like \code{\link[=stopifnot]{stopifnot()}}, generating
 a message automatically based on the first argument.
 
+\code{skip_if_offline()} skips tests if an internet connection is not available
+using \code{\link[curl:nslookup]{curl::nslookup()}}.
+
 \code{skip_on_cran()} skips tests on CRAN, using the \code{NOT_CRAN}
 environment variable set by devtools.
 
@@ -71,6 +82,9 @@ environment variable set by devtools.
 
 \code{skip_on_appveyor()} skips tests on appveyor by inspecting the
 \code{APPVEYOR} environment variable.
+
+#' \code{skip_on_ci()} skips tests on continuous integration systems by inspecting
+the \code{CI} environment variable.
 
 \code{skip_on_bioc()} skips tests on Bioconductor by inspecting the
 \code{BBS_HOME} environment variable.

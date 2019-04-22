@@ -6,7 +6,8 @@
 #' inside of `R CMD check`.
 #'
 #' In your own code, you can use `is_testing()` to determine if code is being
-#' run as part of a test. You can also check the underlying env var directly
+#' run as part of a test and `testing_package()` to retrieve the name of the
+#' package being tested. You can also check the underlying env var directly
 #' `identical(Sys.getenv("TESTTHAT"), "true")` to avoid creating a run-time
 #' dependency on testthat.
 #'
@@ -40,25 +41,26 @@
 #' test_check("yourpackage")
 #' ```
 #'
-#' @param path path to tests
-#' @param package   package name
+#' @param path Path to directory containing tests.
+#' @param package Name of installed package.
 #' @param filter If not `NULL`, only tests with file names matching this
-#'   regular expression will be executed.  Matching will take on the file
+#'   regular expression will be executed. Matching be performed on the file
 #'   name after it has been stripped of `"test-"` and `".R"`.
 #' @param ... Additional arguments passed to [grepl()] to control filtering.
 #' @param stop_on_failure If `TRUE`, throw an error if any tests fail.
 #' @param stop_on_warning If `TRUE`, throw an error if any tests generate
 #'   warnings.
 #' @inheritParams test_file
-#' @return The results of the reporter function on all test results.
-#' @return The results as a "testthat_results" (list)
+#' @return A list of test results.
 #' @export
 #' @examples
-#' \dontrun{test_package("testthat")}
+#' test_dir(testthat_examples(), reporter = "summary")
+#' test_dir(testthat_examples(), reporter = "minimal")
 test_dir <- function(path,
                      filter = NULL,
                      reporter = default_reporter(),
-                     env = test_env(), ...,
+                     env = test_env(),
+                     ...,
                      encoding = "unknown",
                      load_helpers = TRUE,
                      stop_on_failure = FALSE,
@@ -68,13 +70,13 @@ test_dir <- function(path,
     warning("`encoding` is deprecated; all files now assumed to be UTF-8", call. = FALSE)
   }
 
+  withr::local_envvar(list(R_TESTS = "", TESTTHAT = "true"))
+
   if (load_helpers) {
     source_test_helpers(path, env)
   }
   source_test_setup(path, env)
   on.exit(source_test_teardown(path, env), add = TRUE)
-
-  withr::local_envvar(list(R_TESTS = "", TESTTHAT = "true"))
 
   # Promote retirement stages except on CRAN
   if (identical(Sys.getenv("NOT_CRAN"), "true")) {
@@ -97,7 +99,7 @@ test_dir <- function(path,
 #' @rdname test_dir
 test_package <- function(package,
                          filter = NULL,
-                         reporter = check_repoter(),
+                         reporter = check_reporter(),
                          ...,
                          stop_on_failure = TRUE,
                          stop_on_warning = FALSE) {
@@ -148,7 +150,7 @@ test_package <- function(package,
 #' @rdname test_dir
 test_check <- function(package,
                        filter = NULL,
-                       reporter = check_repoter(),
+                       reporter = check_reporter(),
                        ...,
                        stop_on_failure = TRUE,
                        stop_on_warning = FALSE,
@@ -187,6 +189,7 @@ test_package_dir <- function(package, test_path, filter, reporter, ...,
   env <- test_pkg_env(package)
   withr::local_options(list(topLevelEnvironment = env))
 
+  withr::local_envvar(list(TESTTHAT_PKG = package))
   test_dir(
     path = test_path,
     reporter = reporter,
@@ -205,6 +208,11 @@ is_testing <- function() {
   identical(Sys.getenv("TESTTHAT"), "true")
 }
 
+#' @export
+#' @rdname test_dir
+testing_package <- function() {
+  Sys.getenv("TESTTHAT_PKG")
+}
 
 # Environment utils -------------------------------------------------------
 

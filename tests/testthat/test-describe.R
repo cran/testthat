@@ -1,5 +1,3 @@
-context("Describe")
-
 someExternalVariable <- 1
 describe("describe", {
   it("can contain nested describe blocks", {
@@ -52,6 +50,6 @@ describe("describe", {
   })
 
   it("should not be possible to access variables from other specs (2)", {
-    expect_that(exists("some_test_var"), is_false())
+    expect_false(exists("some_test_var"))
   })
 })

@@ -14,6 +14,9 @@
 #' `skip_if_not()` works like [stopifnot()], generating
 #' a message automatically based on the first argument.
 #'
+#' `skip_if_offline()` skips tests if an internet connection is not available
+#' using [curl::nslookup()].
+#'
 #' `skip_on_cran()` skips tests on CRAN, using the `NOT_CRAN`
 #' environment variable set by devtools.
 #'
@@ -23,6 +26,9 @@
 #' `skip_on_appveyor()` skips tests on appveyor by inspecting the
 #' `APPVEYOR` environment variable.
 #'
+#'#' `skip_on_ci()` skips tests on continuous integration systems by inspecting
+#' the `CI` environment variable.
+#'
 #' `skip_on_bioc()` skips tests on Bioconductor by inspecting the
 #' `BBS_HOME` environment variable.
 #'
@@ -31,6 +37,7 @@
 #' a side effect, because the package is likely to be used anyway.
 #'
 #' @param message A message describing why the test was skipped.
+#' @param host A string with a hostname to lookup
 #' @export
 #' @examples
 #' if (FALSE) skip("No internet connection")
@@ -45,6 +52,7 @@
 #'   expect_equal(1, 3)     # this one is also skipped
 #' })
 skip <- function(message) {
+  message <- paste0(message, collapse = "\n")
   cond <- structure(list(message = message), class = c("skip", "condition"))
   stop(cond)
 }
@@ -100,6 +108,16 @@ skip_if_not_installed <- function(pkg, minimum_version = NULL) {
 
 #' @export
 #' @rdname skip
+skip_if_offline <- function(host = "r-project.org") {
+  skip_if_not_installed("curl")
+  has_internet <- !is.null(curl::nslookup(host, error = FALSE))
+  if (!has_internet) {
+    skip("offline")
+  }
+}
+
+#' @export
+#' @rdname skip
 skip_on_cran <- function() {
   if (identical(Sys.getenv("NOT_CRAN"), "true")) {
     return(invisible(TRUE))
@@ -147,6 +165,16 @@ skip_on_appveyor <- function() {
   }
 
   skip("On Appveyor")
+}
+
+#' @export
+#' @rdname skip
+skip_on_ci <- function() {
+  if (!isTRUE(as.logical(Sys.getenv("CI")))) {
+    return(invisible(TRUE))
+  }
+
+  skip("On CI")
 }
 
 #' @export

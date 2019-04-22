@@ -1,5 +1,3 @@
-context("expect_error")
-
 test_that("regexp = NULL checks for presence of error", {
   expect_success(expect_error(stop()))
   expect_failure(expect_error(null()), "did not throw an error")
@@ -49,4 +47,11 @@ test_that("generates informative failures", {
     expect_error(stop("xxx"), class = "zzz")
     expect_error(stop("xxx"), regexp = "zzz", class = "zzz")
   })
+})
+
+test_that("warnings are converted to errors when options('warn') >= 2", {
+  withr::with_options(
+    c(warn = 2),
+    expect_error(warning("foo"))
+  )
 })

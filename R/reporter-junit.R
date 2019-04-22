@@ -1,8 +1,10 @@
 #' @include reporter.R
 NULL
 
+# To allow the Java-style class name format that Jenkins prefers,
+# "package_name_or_domain.ClassName", allow "."s in the class name.
 classnameOK <- function(text) {
-  gsub("[ \\.]", "_", text)
+  gsub("[^._A-Za-z0-9]+", "_", text)
 }
 
 
@@ -39,6 +41,7 @@ JunitReporter <- R6::R6Class("JunitReporter",
     root     = NULL,
     suite    = NULL,
     suite_time = NULL,
+    file_name = NULL,
 
     elapsed_time = function() {
       time <- round((private$proctime() - self$timer)[["elapsed"]], 2)
@@ -65,6 +68,16 @@ JunitReporter <- R6::R6Class("JunitReporter",
       self$reset_suite()
     },
 
+    start_file = function(file) {
+      self$file_name <- file
+    },
+
+    start_test = function(context, test) {
+      if (is.null(context)) {
+        context(context_name(self$file_name))
+      }
+    },
+
     start_context = function(context) {
       self$suite <- xml2::xml_add_child(
         self$root,
@@ -80,7 +93,8 @@ JunitReporter <- R6::R6Class("JunitReporter",
       xml2::xml_attr(self$suite, "skipped") <- as.character(self$skipped)
       xml2::xml_attr(self$suite, "failures") <- as.character(self$failures)
       xml2::xml_attr(self$suite, "errors") <- as.character(self$errors)
-      xml2::xml_attr(self$suite, "time") <- as.character(self$suite_time)
+      #jenkins junit plugin requires time has at most 3 digits
+      xml2::xml_attr(self$suite, "time") <- as.character(round(self$suite_time, 3))
 
       self$reset_suite()
     },
