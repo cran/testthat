@@ -12,7 +12,7 @@ expect_known_output(object, file, update = TRUE, ..., info = NULL,
   label = NULL, print = FALSE, width = 80)
 
 expect_known_value(object, file, update = TRUE, ..., info = NULL,
-  label = NULL)
+  label = NULL, version = 2)
 
 expect_known_hash(object, hash = NULL)
 }
@@ -48,6 +48,10 @@ the object is included in the overall output}
 inherit from \code{getOption("width")} so that tests always use the same
 output width, minimising spurious differences.}
 
+\item{version}{The serialization format version to use. The default, 2, was
+the default format from R 1.4.0 to 3.5.3. Version 3 became the default from
+R 3.6.0 and can only be read by R versions 3.5.0 and higher.}
+
 \item{hash}{Known hash value. Leave empty and you'll be informed what
 to use in the test output.}
 }
@@ -75,7 +79,7 @@ tmp <- tempfile()
 # The first run always succeeds
 expect_known_output(mtcars[1:10, ], tmp, print = TRUE)
 
-# Subsequent runs will suceed only if the file is unchanged
+# Subsequent runs will succeed only if the file is unchanged
 # This will succeed:
 expect_known_output(mtcars[1:10, ], tmp, print = TRUE)
 

@@ -21,6 +21,9 @@
 #' @param update Should the file be updated? Defaults to `TRUE`, with
 #'   the expectation that you'll notice changes because of the first failure,
 #'   and then see the modified files in git.
+#' @param version The serialization format version to use. The default, 2, was
+#'   the default format from R 1.4.0 to 3.5.3. Version 3 became the default from
+#'   R 3.6.0 and can only be read by R versions 3.5.0 and higher.
 #' @inheritParams expect_equal
 #' @inheritParams capture_output_lines
 #' @examples
@@ -29,7 +32,7 @@
 #' # The first run always succeeds
 #' expect_known_output(mtcars[1:10, ], tmp, print = TRUE)
 #'
-#' # Subsequent runs will suceed only if the file is unchanged
+#' # Subsequent runs will succeed only if the file is unchanged
 #' # This will succeed:
 #' expect_known_output(mtcars[1:10, ], tmp, print = TRUE)
 #'
@@ -49,34 +52,38 @@ expect_known_output <- function(object, file,
   act$lab <- label %||% quo_label(act$quo)
   act <- append(act, eval_with_output(object, print = print, width = width))
 
-  if (!file.exists(file)) {
-    warning("Creating reference output", call. = FALSE)
-    write_lines(act$out, file)
-    succeed()
-  } else {
-    ref_out <- read_lines(file)
-    if (update) {
-      write_lines(act$out, file)
-      if (!all_utf8(act$out)) {
-        warning("New reference output is not UTF-8 encoded", call. = FALSE)
-      }
-    }
-    if (!all_utf8(ref_out)) {
-      warning("Reference output is not UTF-8 encoded", call. = FALSE)
-    }
+  compare_file(file, act$out, update = update, info = info, ...)
+  invisible(act$val)
+}
 
-    comp <- compare(act$out, enc2native(ref_out), ...)
-    expect(
-      comp$equal,
-      sprintf(
-        "%s has changed from known value recorded in %s.\n%s",
-        act$lab, encodeString(file, quote = "'"), comp$message
-      ),
-      info = info
-    )
+compare_file <- function(path, lines, ..., update = TRUE, info = NULL) {
+  if (!file.exists(path)) {
+    warning("Creating reference output", call. = FALSE)
+    write_lines(lines, path)
+    succeed()
+    return()
   }
 
-  invisible(act$val)
+  old_lines <- read_lines(path)
+  if (update) {
+    write_lines(lines, path)
+    if (!all_utf8(lines)) {
+      warning("New reference output is not UTF-8 encoded", call. = FALSE)
+    }
+  }
+  if (!all_utf8(old_lines)) {
+    warning("Reference output is not UTF-8 encoded", call. = FALSE)
+  }
+
+  comp <- compare(lines, enc2native(old_lines), ...)
+  expect(
+    comp$equal,
+    sprintf(
+      "Results have changed from known value recorded in %s.\n%s",
+      encodeString(path, quote = "'"), comp$message
+    ),
+    info = info
+  )
 }
 
 #' @export
@@ -90,18 +97,19 @@ expect_known_value <- function(object, file,
                                update = TRUE,
                                ...,
                                info = NULL,
-                               label = NULL) {
+                               label = NULL,
+                               version = 2) {
   act <- quasi_label(enquo(object), label, arg = "object")
 
   if (!file.exists(file)) {
     warning("Creating reference value", call. = FALSE)
-    saveRDS(object, file)
+    saveRDS(object, file, version = version)
     succeed()
   } else {
     ref_val <- readRDS(file)
     comp <- compare(act$val, ref_val, ...)
     if (update && !comp$equal) {
-      saveRDS(act$val, file)
+      saveRDS(act$val, file, version = version)
     }
 
 
