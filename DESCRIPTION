@@ -1,6 +1,6 @@
 Package: testthat
 Title: Unit Testing for R
-Version: 2.2.0
+Version: 2.2.1
 Authors@R: c(
     person("Hadley", "Wickham", , "hadley@rstudio.com", c("aut", "cre")),
     person("RStudio", role = c("cph", "fnd")),
@@ -43,10 +43,10 @@ Collate: 'auto-test.R' 'capture-condition.R' 'capture-output.R'
         'try-again.R' 'utils-io.R' 'utils.R' 'verify-output.R'
         'watcher.R'
 NeedsCompilation: yes
-Packaged: 2019-07-22 17:35:41 UTC; hadley
+Packaged: 2019-07-25 14:59:55 UTC; hadley
 Author: Hadley Wickham [aut, cre],
   RStudio [cph, fnd],
   R Core team [ctb] (Implementation of utils::recover())
 Maintainer: Hadley Wickham <hadley@rstudio.com>
 Repository: CRAN
-Date/Publication: 2019-07-22 21:10:02 UTC
+Date/Publication: 2019-07-25 15:40:02 UTC

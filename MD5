@@ -1,7 +1,7 @@
-d74752ece08eefcbdea567880a727160 *DESCRIPTION
+0543998ba99316c6f4b07b75048bd1e9 *DESCRIPTION
 41b239837eef8d4c02659f86d53fe802 *LICENSE
 98f8782b88000f6e2f346005d935d23c *NAMESPACE
-5a37b98ae94ef29d31294c418b5fd682 *NEWS.md
+2f77796c145e34f28106b4df5443de0a *NEWS.md
 67a9ea0c8bd335efd5dee7cd3028304e *R/auto-test.R
 788d9da5a2774306d3b715bc128fb818 *R/capture-condition.R
 12af590e604239cba4470405e9b003da *R/capture-output.R
@@ -59,7 +59,7 @@ f21ac4008de083e02264aae8c0bdee28 *R/source.R
 b46ecad936d2ee56cab5e8f5ba365a8c *R/teardown.R
 55773fb8deddb6072a465acba878d0af *R/test-compiled-code.R
 e596abf6d8df843b35164ac827206eba *R/test-directory.R
-60c45c8e650896e3d67c1fcd976ff71a *R/test-example.R
+bcaab04d2928340fe769563f8c66a172 *R/test-example.R
 86556e94cbd0d41b424b703e76925bec *R/test-files.R
 0a527a0de94e02e04ae81545f1a9a52f *R/test-path.R
 23b0b953fa88202d8f75a32805e634c8 *R/test-that.R
@@ -147,7 +147,7 @@ f77872b273cd71427c91de15bcf1ffb3 *man/takes_less_than.Rd
 47139bdbe10b23023865bf9bb45f713c *man/teardown.Rd
 411ecae692fe7e44152518beb661fd60 *man/test_dir.Rd
 d80f18859dc03043ef6e5e9521cb42dd *man/test_env.Rd
-7b862d2a8df7a6249aca48fcce32d4cb *man/test_examples.Rd
+5a768411474d6b82809c7afb503c1978 *man/test_examples.Rd
 55fc1ff962f68335d590ff5fb7ff3d6d *man/test_file.Rd
 86f63157419e09dcc092d13c261a309c *man/test_path.Rd
 277779ca0e5c0fb7bd3fbb05fbaf8ead *man/test_that.Rd
@@ -247,6 +247,7 @@ c4a62cd162daf6fccc348f9cbe7d7486 *tests/testthat/test-source.R
 6addb8da099d18560d99764513cb07a5 *tests/testthat/test-source_dir.R
 68e40050db215ec10b1df554c56dc8c4 *tests/testthat/test-teardown-1.R
 c363329ad76f520783b98d3e9a562589 *tests/testthat/test-teardown-2.R
+3e00745173d6a97f092f657129334ac9 *tests/testthat/test-test-example.R
 baf422580a231abc8e092423beaa2d8b *tests/testthat/test-test-path.R
 78ab0c4f69e8b1db0fa2f385f947d64c *tests/testthat/test-test-that.R
 11c9e78005f59c2aba37f9a75005d134 *tests/testthat/test-test_dir.R
