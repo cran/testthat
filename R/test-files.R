@@ -88,6 +88,9 @@ find_test_scripts <- function(path, filter = NULL, invert = FALSE, ...) {
 #' You are responsible for ensuring that the functions to test are available
 #' in the global environment.
 #'
+#' Any errors that occur in code run outside of `test_that()` will generate
+#' a test failure and terminate execution of that test file.
+#'
 #' @param path Path to file.
 #' @param env Environment in which to execute the tests. Expert use only.
 #' @param load_helpers Source helper files before running the tests?
@@ -123,7 +126,7 @@ test_file <- function(path,
   }
 
   reporter <- find_reporter(reporter)
-  if (reporter$is_full()) return()
+  if (!is.null(reporter) && reporter$is_full()) return()
 
   if (load_helpers) {
     source_test_helpers(dirname(path), env = env)

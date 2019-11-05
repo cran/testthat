@@ -52,7 +52,10 @@ env_name <- function(x) {
   gsub("<environment: |>", "", str)
 }
 
-find_first_srcref <- function(calls) {
+find_first_srcref <- function(start) {
+  calls <- sys.calls()
+  calls <- calls[seq2(start, length(calls))]
+
   for (call in calls) {
     srcref <- attr(call, "srcref")
     if (!is.null(srcref)) {
@@ -92,4 +95,32 @@ context_name <- function(filename) {
   filename <- gsub("[.][Rr]", "", filename)
 
   filename
+}
+
+paste_line <- function(...) {
+  paste(chr(...), collapse = "\n")
+}
+
+maybe_root_dir <- function(path) {
+  tryCatch(pkgload::pkg_path(path), error = function(...) path)
+}
+
+maybe_restart <- function(restart) {
+  if (!is.null(findRestart(restart))) {
+    invokeRestart(restart)
+  }
+}
+
+# Backport for R 3.2
+strrep <- function(x, times) {
+  x = as.character(x)
+  if (length(x) == 0L)
+    return(x)
+  unlist(.mapply(function(x, times) {
+    if (is.na(x) || is.na(times))
+      return(NA_character_)
+    if (times <= 0L)
+      return("")
+    paste0(replicate(times, x), collapse = "")
+  }, list(x = x, times = times), MoreArgs = list()), use.names = FALSE)
 }

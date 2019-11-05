@@ -4,7 +4,7 @@
 \alias{expect}
 \title{The building block of all \code{expect_} functions}
 \usage{
-expect(ok, failure_message, info = NULL, srcref = NULL)
+expect(ok, failure_message, info = NULL, srcref = NULL, trace = NULL)
 }
 \arguments{
 \item{ok}{\code{TRUE} or \code{FALSE} indicating if the expectation was successful.}
@@ -16,12 +16,32 @@ for backward compatibility only and new expectations should not use it.}
 
 \item{srcref}{Location of the failure. Should only needed to be explicitly
 supplied when you need to forward a srcref captured elsewhere.}
+
+\item{trace}{An optional backtrace created by \code{\link[rlang:trace_back]{rlang::trace_back()}}.
+When supplied, the expectation is displayed with the backtrace.}
 }
 \value{
 An expectation object. Signals the expectation condition
 with a \code{continue_test} restart.
 }
 \description{
-Call this function when writing your own expectations. See
+Call \code{expect()} when writing your own expectations. See
 \code{vignette("custom-expectation")} for details.
+}
+\details{
+While \code{expect()} creates and signals an expectation in one go,
+\code{exp_signal()} separately signals an expectation that you
+have manually created with \code{\link[=new_expectation]{new_expectation()}}. Expectations are
+signalled with the following protocol:
+\itemize{
+\item If the expectation is a failure or an error, it is signalled with
+\code{\link[base:stop]{base::stop()}}. Otherwise, it is signalled with
+\code{\link[base:signalCondition]{base::signalCondition()}}.
+\item The \code{continue_test} restart is registered. When invoked, failing
+expectations are ignored and normal control flow is resumed to
+run the other tests.
+}
+}
+\seealso{
+\code{\link[=exp_signal]{exp_signal()}}
 }

@@ -1,7 +1,7 @@
 #' Quasi-labelling
 #'
 #' The first argument to every `expect_` function can use unquoting to
-#' construct better labels. This makes it easy to create informative labels
+#' construct better labels. This makes it easy to create informative labels when
 #' expectations are used inside a function or a for loop. `quasi_label()` wraps
 #' up the details, returning the expression and label.
 #'
@@ -25,7 +25,7 @@
 #' f <- function(i) if (i > 3) i * 9 else i * 10
 #' i <- 10
 #'
-#' # This short of expression commonly occurs inside a for loop or function
+#' # This sort of expression commonly occurs inside a for loop or function
 #' # And the failure isn't helpful because you can't see the value of i
 #' # that caused the problem:
 #' show_failure(expect_equal(f(i), i * 10))
@@ -40,25 +40,29 @@ quasi_label <- function(quo, label = NULL, arg = "quo") {
     stop("argument `", arg, "` is missing, with no default.", call. = FALSE)
   }
 
+  expr <- quo_get_expr(quo)
+
   list(
-    val = eval_bare(get_expr(quo), get_env(quo)),
-    lab = label %||% expr_label(get_expr(quo))
+    val = eval_bare(expr, quo_get_env(quo)),
+    lab = label %||% expr_label(expr)
   )
 }
 
 quasi_capture <- function(.quo, .label, .capture, ...) {
   act <- list()
   act$lab <- .label %||% quo_label(.quo)
-  act$cap <- .capture(act$val <- eval_bare(get_expr(.quo), get_env(.quo)), ...)
+  act$cap <- .capture(act$val <- eval_bare(quo_get_expr(.quo), quo_get_env(.quo)), ...)
 
   act
 }
 
 expr_label <- function(x) {
-  if (is.character(x)) {
-    encodeString(x, quote = '"')
-  } else if (is.atomic(x)) {
-    format(x)
+  if (is.atomic(x)) {
+    x <- deparse(x)
+    if (length(x) > 1) {
+      x <- paste0(x[[1]], "...)")
+    }
+    x
   } else if (is.name(x)) {
     paste0("`", as.character(x), "`")
   } else {

@@ -4,39 +4,91 @@
 \alias{verify_output}
 \title{Verify output}
 \usage{
-verify_output(path, code, width = 80, crayon = FALSE)
+verify_output(path, code, width = 80, crayon = FALSE,
+  unicode = FALSE, env = caller_env())
 }
 \arguments{
-\item{path}{Path to save file. Typically this will be a call to
-\code{\link[=test_path]{test_path()}} so that the same path when the code is run interactively.}
+\item{path}{Path to record results.
 
-\item{code}{Code to execute.}
+This should usually be a call to \code{\link[=test_path]{test_path()}} to ensures that same path
+is used when run interactively (when the working directory is typically
+the project root), and when run as an autmated test (when the working
+directory will be \code{tests/testthat}).}
+
+\item{code}{Code to execute. This will usually be a multiline expression
+contained within \code{{}} (similarly to \code{test_that()} calls).}
 
 \item{width}{Width of console output}
 
 \item{crayon}{Enable crayon package colouring?}
+
+\item{unicode}{Enable cli package UTF-8 symbols? If you set this to
+\code{TRUE}, call \code{skip_if(!cli::is_utf8_output())} to disable the
+test on your CI platforms that don't support UTF-8 (e.g. Windows).}
+
+\item{env}{The environment to evaluate \code{code} in.}
 }
 \description{
-This is a regression test records interwoven code and output into a file,
-similar to Rmd. It's designed particularly for testing print methods and
-error messages, where the primary goal is to ensure that the output is
-helpful to a human. Obviously, there's no way to test that automatically,
-so the best we can do is make the results explicit by saving to a text file.
-This makes the presentation easier to see in code reviews, and avoids
-changing it accidentally.
-}
-\section{CRAN}{
+This is a regression test that records interwoven code and output into a
+file, in a similar way to kniting an \code{.Rmd} (but see caveats below).
 
-On CRAN, \code{verify_output()} will not fail if the output changes. This is
-beause tests of print methods and error messages are often fragile due to
-implicit dependencies on other packages, and failure does not imply
-incorrect computation, just a change in presentation.
-}
+\code{verify_output()} designed particularly for testing print methods and error
+messages, where the primary goal is to ensure that the output is helpful to
+a human. Obviously, you can't test that with code, so the best you can do is
+make the results explicit by saving them to text file. This makes the output
+easy to see in code reviews, and ensures that you don't change the output
+accidentally.
 
-\section{Differences to Rmd}{
+\code{verify_output()} is designed to be used with git: to see what has changed
+from the previous run, you'll need to use \code{git diff} or similar.
+}
+\section{Syntax}{
 
 \code{verify_output()} can only capture the abstract syntax tree, losing all
-whitespace and comments. To mildy offset this limitation, bare string
-are turned into comments.
+whitespace and comments. To mildy offset this limitation:
+\itemize{
+\item Strings are converted to R comments in the output.
+\item Strings starting with \code{# } are converted to headers in the output.
+}
 }
 
+\section{CRAN}{
+
+On CRAN, \code{verify_output()} will never fail, even if the output changes.
+This avoids false positives because tests of print methods and error
+messages are often fragile due to implicit dependencies on other packages,
+and failure does not imply incorrect computation, just a change in
+presentation.
+}
+
+\examples{
+# The first argument would usually be `test_path("informative-name.txt"`)
+# but that is not permitted in examples
+path <- tempfile()
+verify_output(path, {
+   head(mtcars)
+   log(-10)
+   "a" * 3
+})
+writeLines(readLines(path))
+
+# Use strings to create comments in the output
+verify_output(tempfile(), {
+   "Print method"
+   head(mtcars)
+
+   "Warning"
+   log(-10)
+
+   "Error"
+   "a" * 3
+})
+
+# Use strings starting with # to create headings
+verify_output(tempfile(), {
+   "# Base functions"
+   head(mtcars)
+   log(-10)
+   "a" * 3
+})
+}
