@@ -133,9 +133,12 @@ format.expectation_success <- function(x, ...) {
   "As expected"
 }
 
+# Access error fields with `[[` rather than `$` because the
+# `$.Throwable` from the rJava package throws with unknown fields
+
 #' @export
 format.expectation <- function(x, ...) {
-  if (is.null(x$trace) || trace_length(x$trace) == 0L) {
+  if (is.null(x[["trace"]]) || trace_length(x[["trace"]]) == 0L) {
     x$message
   } else {
     format_with_trace(x)
@@ -176,23 +179,23 @@ as.expectation.expectation <- function(x, ..., srcref = NULL) {
 
 #' @export
 as.expectation.error <- function(x, ..., srcref = NULL) {
-  error <- x$message
+  error <- cnd_message(x)
 
   msg <- gsub("Error.*?: ", "", as.character(error))
   # Remove trailing newline to be consistent with other conditons
   msg <- gsub("\n$", "", msg)
 
-  expectation("error", msg, srcref, trace = x$trace)
+  expectation("error", msg, srcref, trace = x[["trace"]])
 }
 
 #' @export
 as.expectation.warning <- function(x, ..., srcref = NULL) {
-  expectation("warning", x$message, srcref)
+  expectation("warning", cnd_message(x), srcref)
 }
 
 #' @export
 as.expectation.skip <- function(x, ..., srcref = NULL) {
-  expectation("skip", x$message, srcref)
+  expectation("skip", cnd_message(x), srcref)
 }
 
 # expectation_type --------------------------------------------------------
