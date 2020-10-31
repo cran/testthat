@@ -1,6 +1,3 @@
-#' @include reporter.R
-NULL
-
 #' Test reporter: minimal.
 #'
 #' The minimal test reporter provides the absolutely minimum amount of
@@ -13,6 +10,11 @@ NULL
 MinimalReporter <- R6::R6Class("MinimalReporter",
   inherit = Reporter,
   public = list(
+    initialize = function(...) {
+      super$initialize(...)
+      self$capabilities$parallel_support <- TRUE
+    },
+
     add_result = function(context, test, result) {
       self$cat_tight(single_letter_summary(result))
     },

@@ -1,6 +1,3 @@
-#' @include reporter.R
-NULL
-
 #' Test reporter: fail at end.
 #'
 #' This reporter will simply throw an error if any of the tests failed. It is
@@ -13,6 +10,11 @@ FailReporter <- R6::R6Class("FailReporter",
   inherit = Reporter,
   public = list(
     failed = FALSE,
+
+    initialize = function(...) {
+      self$capabilities$parallel_support <- TRUE
+      super$initialize(...)
+    },
 
     add_result = function(context, test, result) {
       self$failed <- self$failed || expectation_broken(result)

@@ -2,23 +2,40 @@
 % Please edit documentation in R/test-files.R
 \name{find_test_scripts}
 \alias{find_test_scripts}
-\title{Find the test files.}
+\title{Find test files}
 \usage{
-find_test_scripts(path, filter = NULL, invert = FALSE, ...)
+find_test_scripts(
+  path,
+  filter = NULL,
+  invert = FALSE,
+  ...,
+  full.names = TRUE,
+  start_first = NULL
+)
 }
 \arguments{
 \item{path}{path to tests}
 
-\item{filter}{cf \code{\link[=test_dir]{test_dir()}}}
+\item{filter}{If not \code{NULL}, only tests with file names matching this
+regular expression will be executed. Matching is performed on the file
+name after it's stripped of \code{"test-"} and \code{".R"}.}
 
-\item{invert}{If \sQuote{TRUE} return files which do \emph{not} match.}
+\item{invert}{If \code{TRUE} return files which \strong{don't} match.}
 
 \item{...}{Additional arguments passed to \code{\link[=grepl]{grepl()}} to control filtering.}
+
+\item{start_first}{A character vector of file patterns (globs, see
+\code{\link[utils:glob2rx]{utils::glob2rx()}}). The patterns are for the file names (base names),
+not for the whole paths. testthat starts the files matching the
+first pattern first,  then the ones matching the second, etc. and then
+the rest of the files, alphabetically. Parallel tests tend to finish
+quicker if you start the slowest files first. \code{NULL} means alphabetical
+order.}
 }
 \value{
-the test file paths
+A character vector of paths
 }
 \description{
-Find the test files.
+Find test files
 }
 \keyword{internal}

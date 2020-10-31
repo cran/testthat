@@ -2,7 +2,7 @@
 % Please edit documentation in R/expect-output.R
 \name{expect_output}
 \alias{expect_output}
-\title{Expectation: does code print output to the console?}
+\title{Does code print output to the console?}
 \usage{
 expect_output(
   object,
@@ -70,9 +70,9 @@ Other expectations:
 \code{\link{expect_error}()},
 \code{\link{expect_length}()},
 \code{\link{expect_match}()},
-\code{\link{expect_message}()},
 \code{\link{expect_named}()},
 \code{\link{expect_null}()},
+\code{\link{expect_reference}()},
 \code{\link{expect_silent}()},
 \code{\link{inheritance-expectations}},
 \code{\link{logical-expectations}}

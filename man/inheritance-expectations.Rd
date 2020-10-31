@@ -5,7 +5,8 @@
 \alias{expect_type}
 \alias{expect_s3_class}
 \alias{expect_s4_class}
-\title{Expectation: does the object inherit from a S3 or S4 class, or is it a base type?}
+\title{Does code return an object inheriting from the expected base type, S3 class,
+or S4 class?}
 \usage{
 expect_type(object, type)
 
@@ -37,6 +38,8 @@ the vocabulary used here.
 \item \code{expect_s4_class(x, class)} checks that \code{x} is an S4 object that
 \code{\link[=is]{is()}} \code{class}.
 }
+
+See \code{\link[=expect_vector]{expect_vector()}} for testing properties of objects created by vctrs.
 }
 \examples{
 x <- data.frame(x = 1:10, y = "x", stringsAsFactors = TRUE)
@@ -63,10 +66,10 @@ Other expectations:
 \code{\link{expect_error}()},
 \code{\link{expect_length}()},
 \code{\link{expect_match}()},
-\code{\link{expect_message}()},
 \code{\link{expect_named}()},
 \code{\link{expect_null}()},
 \code{\link{expect_output}()},
+\code{\link{expect_reference}()},
 \code{\link{expect_silent}()},
 \code{\link{logical-expectations}}
 }

@@ -3,7 +3,7 @@
 \name{expect_setequal}
 \alias{expect_setequal}
 \alias{expect_mapequal}
-\title{Expectation: do two vectors contain the same values?}
+\title{Does code return a vector containing the expected values?}
 \usage{
 expect_setequal(object, expected)
 
@@ -27,7 +27,7 @@ more details.}
 \item \code{expect_setequal(x, y)} tests that every element of \code{x} occurs in \code{y},
 and that every element of \code{y} occurs in \code{x}.
 \item \code{expect_mapequal(x, y)} tests that \code{x} and \code{y} have the same names, and
-that \code{x[names(y)]} equals \code{x}.
+that \code{x[names(y)]} equals \code{y}.
 }
 }
 \details{

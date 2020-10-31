@@ -1,14 +1,17 @@
-#' @include reporter.R stack.R
-NULL
-
 #' Test reporter: interactive progress bar of errors.
 #'
-#' This reporter is a reimagining of [SummaryReporter] desgined to make the
-#' most information available up front, while taking up less space overall. It
-#' is the default reporting reporter used by [test_dir()] and [test_file()].
+#' @description
+#' `ProgressReporter` is designed for interactively use. It's goal is to
+#' give you actionable insights to help you understand the status of your
+#' code. This reporter also praises you from time-to-time if all your tests
+#' pass. It's the default reporter for [test_dir()].
 #'
-#' As an additional benefit, this reporter will praise you from time-to-time
-#' if all your tests pass.
+#' `ParallelProgressReporter` is very similar to `ProgressReporter`, but
+#' works better for packages that want parallel tests.
+#'
+#' `CompactProgressReporter` is a minimal version of `ProgressReporter`
+#' designed for use with single files. It's the default reporter for
+#' [test_file()].
 #'
 #' @export
 #' @family reporters
@@ -21,11 +24,15 @@ ProgressReporter <- R6::R6Class("ProgressReporter",
     last_update = NULL,
     update_interval = NULL,
 
+    skips = NULL,
+
     max_fail = NULL,
     n_ok = 0,
     n_skip = 0,
     n_warn = 0,
     n_fail = 0,
+
+    frames = NULL,
 
     ctxt_start_time = NULL,
     ctxt_issues = NULL,
@@ -43,10 +50,16 @@ ProgressReporter <- R6::R6Class("ProgressReporter",
                           update_interval = 0.1,
                           ...) {
       super$initialize(...)
+      self$capabilities$parallel_support <- TRUE
       self$max_fail <- max_failures
       self$show_praise <- show_praise
       self$min_time <- min_time
       self$update_interval <- update_interval
+
+      self$skips <- Stack$new()
+
+      # Capture at init so not affected by test settings
+      self$frames <- cli::get_spinner()$frames
     },
 
     is_full = function() {
@@ -60,22 +73,10 @@ ProgressReporter <- R6::R6Class("ProgressReporter",
 
     start_file = function(file) {
       self$file_name <- file
-
-      # Need to set here in case file doesn't contain any tests
       self$ctxt_issues <- Stack$new()
       self$ctxt_start_time <- proc.time()
-    },
 
-    start_test = function(context, test) {
-      if (is.null(context)) {
-
-        # We call the regular context() function rather than
-        # self$start_context() or self$.start_context() here because when this
-        # is called by a reporter inside the multi-reporter we need to assign
-        # self$.context in the multi-reporter rather than in the contained
-        # reporter.
-        context(context_name(self$file_name))
-      }
+      context_start_file(self$file_name)
     },
 
     start_context = function(context) {
@@ -102,20 +103,36 @@ ProgressReporter <- R6::R6Class("ProgressReporter",
       )
     },
 
-    show_status = function(complete = FALSE) {
+    status_data = function() {
+      list(
+        n = self$ctxt_n,
+        n_ok = self$ctxt_n_ok,
+        n_fail = self$ctxt_n_fail,
+        n_warn = self$ctxt_n_warn,
+        n_skip = self$ctxt_n_skip,
+        name = self$ctxt_name
+      )
+    },
+
+    show_status = function(complete = FALSE, time = 0, pad = FALSE) {
+      data <- self$status_data()
       if (complete) {
-        if (self$ctxt_n_fail > 0) {
+        if (data$n_fail > 0) {
           status <- crayon::red(cli::symbol$cross)
         } else {
           status <- crayon::green(cli::symbol$tick)
         }
       } else {
-
         # Do not print if not enough time has passed since we last printed.
         if (!self$should_update()) {
           return()
         }
-        status <- spinner(self$ctxt_n)
+        status <- spinner(self$frames, data$n)
+        if (data$n_fail > 0) {
+          status <- colourise(status, "failure")
+        } else if (data$n_warn > 0) {
+          status <- colourise(status, "warning")
+        }
       }
 
       col_format <- function(n, type) {
@@ -126,38 +143,47 @@ ProgressReporter <- R6::R6Class("ProgressReporter",
         }
       }
 
-      self$cat_tight(
-        "\r",
-        status, " | ", sprintf("%3d", self$ctxt_n_ok), " ",
-        col_format(self$ctxt_n_fail, "fail"), " ",
-        col_format(self$ctxt_n_warn, "warn"), " ",
-        col_format(self$ctxt_n_skip, "skip"), " | ",
-        self$ctxt_name
+      message <- paste0(
+        status, " | ", sprintf("%3d", data$n_ok), " ",
+        col_format(data$n_fail, "fail"), " ",
+        col_format(data$n_warn, "warn"), " ",
+        col_format(data$n_skip, "skip"), " | ",
+        data$name
       )
+
+      if (complete && time > self$min_time) {
+        message <- paste0(
+          message,
+          cli::col_cyan(sprintf(" [%.1f s]", time))
+        )
+      }
+
+      if (pad) {
+        message <- strpad(message, self$width)
+        message <- crayon::col_substr(message, 1, self$width)
+      }
+
+      if (!complete) {
+        message <- strpad(message, self$width)
+        self$cat_tight("\r", message)
+      } else {
+        self$cat_line("\r", message)
+      }
     },
 
     end_context = function(context) {
       time <- proc.time() - self$ctxt_start_time
-
       self$last_update <- NULL
-      self$show_status(complete = TRUE)
 
-      if (time[[3]] > self$min_time) {
-        self$cat_line(sprintf(" [%.1f s]", time[[3]]), col = "cyan")
-      } else {
-        self$cat_line()
+      # context with no expectation = automatic file context in file
+      # that also has manual contexts
+      if (self$ctxt_n == 0) {
+        return()
       }
 
-      if (self$ctxt_issues$size() > 0) {
-        self$rule()
+      self$show_status(complete = TRUE, time = time[[3]])
 
-        issues <- self$ctxt_issues$as_list()
-        summary <- vapply(issues, issue_summary, FUN.VALUE = character(1))
-        self$cat_tight(paste(summary, collapse = "\n\n"))
-
-        self$cat_line()
-        self$rule()
-      }
+      self$report_issues(self$ctxt_issues)
     },
 
     add_result = function(context, test, result) {
@@ -171,6 +197,7 @@ ProgressReporter <- R6::R6Class("ProgressReporter",
         self$n_skip <- self$n_skip + 1
         self$ctxt_n_skip <- self$ctxt_n_skip + 1
         self$ctxt_issues$push(result)
+        self$skips$push(result$message)
       } else if (expectation_warning(result)) {
         self$n_warn <- self$n_warn + 1
         self$ctxt_n_warn <- self$ctxt_n_warn + 1
@@ -180,17 +207,20 @@ ProgressReporter <- R6::R6Class("ProgressReporter",
         self$ctxt_n_ok <- self$ctxt_n_ok + 1
       }
 
+      if (self$is_full()) {
+        self$local_user_output()
+        self$end_context()
+        stop_reporter(paste0(
+          "Maximum number of failures exceeded; quitting early.\n",
+          "You can increase this number by setting `options(testthat.progress.max_fails)`"
+        ))
+      }
+
       self$show_status()
     },
 
     end_reporter = function() {
       self$cat_line()
-
-      if (self$is_full()) {
-        self$rule("Terminating early", line = 2)
-        self$cat_line("Too many failures")
-        return()
-      }
 
       colour_if <- function(n, type) {
         colourise(n, if (n == 0) "success" else type)
@@ -203,10 +233,18 @@ ProgressReporter <- R6::R6Class("ProgressReporter",
         self$cat_line()
       }
 
-      self$cat_line("OK:       ", colourise(self$n_ok, "success"))
-      self$cat_line("Failed:   ", colour_if(self$n_fail, "fail"))
-      self$cat_line("Warnings: ", colour_if(self$n_warn, "warn"))
-      self$cat_line("Skipped:  ", colour_if(self$n_skip, "skip"))
+      if (self$n_skip > 0) {
+        self$rule("Skipped tests ", line = 1)
+        self$cat_line(skip_bullets(self$skips$as_list()))
+        self$cat_line()
+      }
+
+      status <- summary_line(self$n_fail, self$n_warn, self$n_skip, self$n_ok)
+      self$cat_line(status)
+
+      if (self$is_full()) {
+        self$rule("Terminated early", line = 2)
+      }
 
       if (!self$show_praise || runif(1) > 0.1) {
         return()
@@ -220,9 +258,25 @@ ProgressReporter <- R6::R6Class("ProgressReporter",
       }
     },
 
+    report_issues = function(issues) {
+      if (issues$size() > 0) {
+        self$rule()
+
+        issues <- issues$as_list()
+        summary <- vapply(issues, issue_summary, FUN.VALUE = character(1))
+        self$cat_tight(paste(summary, collapse = "\n\n"))
+
+        self$cat_line()
+        self$rule()
+      }
+    },
+
     should_update = function() {
       if (self$update_interval == 0) {
         return(TRUE)
+      }
+      if (identical(self$update_interval, Inf)) {
+        return(FALSE)
       }
 
       time <- proc.time()[[3]]
@@ -236,26 +290,215 @@ ProgressReporter <- R6::R6Class("ProgressReporter",
   )
 )
 
+#' @export
+#' @rdname ProgressReporter
+CompactProgressReporter <- R6::R6Class("CompactProgressReporter",
+  inherit = ProgressReporter,
+  public = list(
+    # Is this being run by RStudio's test file button?
+    rstudio = FALSE,
 
-spinner <- function(i) {
-  frames <- cli::get_spinner()$frames
+    initialize = function(rstudio = FALSE, min_time = Inf, ...) {
+      self$rstudio <- rstudio
+      super$initialize(min_time = min_time, ...)
+    },
+
+    start_file = function(name) {
+      if (!self$rstudio) {
+        self$cat_line()
+        self$rule(cli::style_bold(paste0("Testing ", name)), line = 2)
+      }
+      super$start_file(name)
+    },
+
+    start_reporter = function(context) {
+    },
+
+    end_context = function(context) {
+      if (self$ctxt_issues$size() == 0) {
+        return()
+      }
+
+      self$cat_line()
+      self$cat_line()
+
+      issues <- self$ctxt_issues$as_list()
+      summary <- vapply(issues, issue_summary, rule = TRUE,
+        FUN.VALUE = character(1)
+      )
+      self$cat_tight(paste(summary, collapse = "\n\n"))
+
+      self$cat_line()
+      self$cat_line()
+    },
+
+    end_reporter = function() {
+      if (self$n_fail > 0 || self$n_warn > 0 || self$n_skip > 0) {
+        self$show_status()
+        self$cat_line()
+      } else if (self$is_full()) {
+        self$cat_line(" Terminated early")
+      } else if (!self$rstudio) {
+        self$cat_line(crayon::bold(" Done!"))
+      }
+    },
+
+    show_status = function(complete = NULL) {
+      self$local_user_output()
+      status <- summary_line(self$n_fail, self$n_warn, self$n_skip, self$n_ok)
+      self$cat_tight("\r", status)
+    }
+
+  )
+)
+
+# parallel progres reporter -----------------------------------------------
+
+#' @export
+#' @rdname ProgressReporter
+
+ParallelProgressReporter <- R6::R6Class("ParallelProgressReporter",
+  inherit = ProgressReporter,
+  public = list(
+
+    files = list(),
+    spin_frame = 0L,
+    is_rstudio = FALSE,
+
+    initialize = function(...) {
+      super$initialize(...)
+      self$capabilities$parallel_support <- TRUE
+      self$capabilities$parallel_updates <- TRUE
+      self$update_interval <- 0.05
+      self$is_rstudio <- Sys.getenv("RSTUDIO", "") == "1"
+    },
+
+    start_file = function(file)  {
+      if (! file %in% names(self$files)) {
+        self$files[[file]] <- list(
+          issues = Stack$new(),
+          n_fail = 0L,
+          n_skip_ = 0L,
+          n_warn = 0L,
+          n_ok = 0L,
+          name = context_name(file),
+          start_time = proc.time()
+        )
+      }
+      self$file_name <- file
+    },
+
+    start_context = function(context) {
+      # we'll just silently ignore this
+    },
+
+    end_context = function(context) {
+      # we'll just silently ignore this
+    },
+
+    end_file = function() {
+      fsts <- self$files[[self$file_name]]
+      time <- proc.time() - fsts$start_time
+
+      # Workaround for https://github.com/rstudio/rstudio/issues/7649
+      if (self$is_rstudio) {
+        self$cat_tight(strpad("\r", self$width + 1)) # +1 for \r
+      }
+      self$show_status(complete = TRUE, time = time[[3]], pad = TRUE)
+      self$report_issues(fsts$issues)
+
+      self$files[[self$file_name]] <- NULL
+      if (length(self$files)) self$update(force = TRUE)
+    },
+
+    end_reporter = function() {
+      self$cat_tight("\r", strpad("", self$width))
+      super$end_reporter()
+    },
+
+    show_header = function() {
+      super$show_header()
+      self$update(force = TRUE)
+    },
+
+    status_data = function() {
+      self$files[[self$file_name]]
+    },
+
+    add_result = function(context, test, result) {
+      self$ctxt_n <- self$ctxt_n + 1L
+      file <- self$file_name
+      if (expectation_broken(result)) {
+        self$n_fail <- self$n_fail + 1
+        self$files[[file]]$n_fail <- self$files[[file]]$n_fail + 1L
+        self$files[[file]]$issues$push(result)
+      } else if (expectation_skip(result)) {
+        self$n_skip <- self$n_skip + 1
+        self$files[[file]]$n_skip <- self$files[[file]]$n_skip + 1L
+        self$files[[file]]$issues$push(result)
+        self$skips$push(result$message)
+      } else if (expectation_warning(result)) {
+        self$n_warn <- self$n_warn + 1
+        self$files[[file]]$n_warn <- self$files[[file]]$n_warn + 1L
+        self$files[[file]]$issues$push(result)
+      } else {
+        self$n_ok <- self$n_ok + 1
+        self$files[[file]]$n_ok <- self$files[[file]]$n_ok + 1
+      }
+    },
+
+    update = function(force = FALSE) {
+      if (!force && !self$should_update()) return()
+      self$spin_frame <- self$spin_frame + 1L
+      status <- spinner(self$frames, self$spin_frame)
+
+      message <- paste(
+        status,
+        summary_line(self$n_fail, self$n_warn, self$n_skip, self$n_ok),
+        if (length(self$files) > 0) "@" else "Starting up...",
+        paste(context_name(names(self$files)), collapse = ", ")
+      )
+      message <- strpad(message, self$width)
+      message <- crayon::col_substr(message, 1, self$width)
+      self$cat_tight("\r", message)
+    }
+  )
+)
+
+# helpers -----------------------------------------------------------------
+
+spinner <- function(frames, i) {
   frames[((i - 1) %% length(frames)) + 1]
 }
 
-issue_summary <- function(x) {
+issue_header <- function(x) {
   type <- expectation_type(x)
-
-  if (is.null(x$srcref)) {
-    loc <- "???"
+  if (has_colour()) {
+    type <- colourise(first_upper(type), type)
   } else {
-    filename <- attr(x$srcref, "srcfile")$filename
-    loc <- paste0(basename(filename), ":", x$srcref[1])
+    type <- if (expectation_broken(x)) toupper(type) else first_upper(type)
   }
 
-  header <- paste0(loc, ": ", colourise(type, type), ": ", x$test)
+  loc <- expectation_location(x)
+  paste0(type, " (", loc, "): ", x$test)
+}
 
-  paste0(
-    crayon::bold(header), "\n",
-    format(x)
-  )
+issue_summary <- function(x, rule = FALSE) {
+  header <- crayon::bold(issue_header(x))
+  if (rule) {
+    header <- cli::rule(header)
+  }
+
+  paste0(header, "\n", format(x))
+}
+
+strpad <- function(x, width = cli::console_width()) {
+  n <- pmax(0, width - crayon::col_nchar(x))
+  paste0(x, strrep(" ", n))
+}
+
+skip_bullets <- function(skips) {
+  skips <- gsub("Reason: ", "", unlist(skips))
+  tbl <- table(skips)
+  paste0(cli::symbol$bullet, " ", names(tbl), " (", tbl, ")")
 }

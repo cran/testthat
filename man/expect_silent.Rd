@@ -2,7 +2,7 @@
 % Please edit documentation in R/expect-silent.R
 \name{expect_silent}
 \alias{expect_silent}
-\title{Expectation: is the code silent?}
+\title{Does code execute silently?}
 \usage{
 expect_silent(object)
 }
@@ -37,10 +37,10 @@ Other expectations:
 \code{\link{expect_error}()},
 \code{\link{expect_length}()},
 \code{\link{expect_match}()},
-\code{\link{expect_message}()},
 \code{\link{expect_named}()},
 \code{\link{expect_null}()},
 \code{\link{expect_output}()},
+\code{\link{expect_reference}()},
 \code{\link{inheritance-expectations}},
 \code{\link{logical-expectations}}
 }

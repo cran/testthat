@@ -178,17 +178,25 @@ skip_on_appveyor <- function() {
 #' @export
 #' @rdname skip
 skip_on_ci <- function() {
-  if (!isTRUE(as.logical(Sys.getenv("CI")))) {
+  if (!on_ci()) {
     return(invisible(TRUE))
   }
 
   skip("On CI")
 }
 
+on_ci <- function() {
+ isTRUE(as.logical(Sys.getenv("CI")))
+}
+
+in_covr <- function() {
+  identical(Sys.getenv("R_COVR"), "true")
+}
+
 #' @export
 #' @rdname skip
 skip_on_covr <- function() {
-  if (!identical(Sys.getenv("R_COVR"), "true")) {
+  if (! in_covr()) {
     return(invisible(TRUE))
   }
 

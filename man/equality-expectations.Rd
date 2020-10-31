@@ -3,24 +3,14 @@
 \name{equality-expectations}
 \alias{equality-expectations}
 \alias{expect_equal}
-\alias{expect_equivalent}
 \alias{expect_identical}
-\alias{expect_reference}
-\title{Expectation: is the object equal to a value?}
+\title{Does code return the expected value?}
 \usage{
 expect_equal(
   object,
   expected,
   ...,
-  info = NULL,
-  label = NULL,
-  expected.label = NULL
-)
-
-expect_equivalent(
-  object,
-  expected,
-  ...,
+  tolerance = if (edition_get() >= 3) testthat_tolerance(),
   info = NULL,
   label = NULL,
   expected.label = NULL
@@ -34,14 +24,6 @@ expect_identical(
   expected.label = NULL,
   ...
 )
-
-expect_reference(
-  object,
-  expected,
-  info = NULL,
-  label = NULL,
-  expected.label = NULL
-)
 }
 \arguments{
 \item{object, expected}{Computation and value to compare it to.
@@ -50,9 +32,21 @@ Both arguments supports limited unquoting to make it easier to generate
 readable failures within a function or for loop. See \link{quasi_label} for
 more details.}
 
-\item{...}{For \code{expect_equal()} and \code{expect_equivalent()}, passed on
-\code{\link[=compare]{compare()}}, for \code{expect_identical()} passed on to \code{\link[=identical]{identical()}}.
-Used to control the details of the comparison.}
+\item{...}{\strong{3e}: passed on to \code{\link[waldo:compare]{waldo::compare()}}. See its docs to see other
+ways to control comparison.
+
+\strong{2e}: passed on to \code{\link[=compare]{compare()}}/\code{\link[=identical]{identical()}}.}
+
+\item{tolerance}{\strong{3e}: passed on to \code{\link[waldo:compare]{waldo::compare()}}. If non-\code{NULL}, will
+ignore small floating point differences. It uses same algorithm as
+\code{\link[=all.equal]{all.equal()}} so the tolerance is usually relative (i.e.
+\verb{mean(abs(x - y) / mean(abs(y)) < tolerance}), except when the differences
+are very small, when it becomes absolute (i.e. \verb{mean(abs(x - y) < tolerance}).
+See waldo documentation for more details.
+
+\strong{2e}: passed on to \code{\link[=compare]{compare()}}, if set. It's hard to
+reason about exactly what tolerance means because depending on the precise
+code path it could be either an absolute or relative tolerance.}
 
 \item{info}{Extra information to be included in the message. This argument
 is soft-deprecated and should not be used in new code. Instead see
@@ -62,55 +56,42 @@ alternatives in \link{quasi_label}.}
 use only.}
 }
 \description{
-\itemize{
-\item \code{expect_identical()} compares values with \code{\link[=identical]{identical()}}.
-\item \code{expect_equal()} compares values  with \code{\link[=all.equal]{all.equal()}}
-\item \code{expect_equivalent()} compares values with \code{\link[=all.equal]{all.equal()}} and
-\code{check.attributes = FALSE}
-\item \code{expect_reference()} compares the underlying memory addresses.
-}
+These functions provide two levels of strictness when comparing a
+computation to a reference value. \code{expect_identical()} is the baseline;
+\code{expect_equal()} relaxes the test to ignore small numeric differences.
+
+In the 2nd edition, \code{expect_identical()} uses \code{\link[=identical]{identical()}} and
+\code{expect_equal} uses \code{\link[=all.equal]{all.equal()}}. In the 3rd edition, both functions use
+\href{https://github.com/r-lib/waldo}{waldo}. They differ only in that
+\code{expect_equal()} sets \code{tolerance = testthat_tolerance()} so that small
+floating point differences are ignored; this also implies that (e.g.) \code{1}
+and \code{1L} are treated as equal.
 }
 \examples{
 a <- 10
 expect_equal(a, 10)
 
 # Use expect_equal() when testing for numeric equality
-sqrt(2) ^ 2 - 1
-expect_equal(sqrt(2) ^ 2, 2)
-# Neither of these forms take floating point representation errors into
-# account
 \dontrun{
-expect_true(sqrt(2) ^ 2 == 2)
 expect_identical(sqrt(2) ^ 2, 2)
 }
-
-# You can pass on additional arguments to all.equal:
-\dontrun{
-# Test the ABSOLUTE difference is within .002
-expect_equal(10.01, 10, tolerance = .002, scale = 1)
-}
-
-# Test the RELATIVE difference is within .002
-x <- 10
-expect_equal(10.01, expected = x, tolerance = 0.002, scale = x)
-
-# expect_equivalent ignores attributes
-a <- b <- 1:3
-names(b) <- letters[1:3]
-expect_equivalent(a, b)
+expect_equal(sqrt(2) ^ 2, 2)
 }
 \seealso{
-\code{expect_setequal()} to test for set equality.
+\itemize{
+\item \code{\link[=expect_setequal]{expect_setequal()}}/\code{\link[=expect_mapequal]{expect_mapequal()}} to test for set equality.
+\item \code{\link[=expect_reference]{expect_reference()}} to test if two names point to same memory address.
+}
 
 Other expectations: 
 \code{\link{comparison-expectations}},
 \code{\link{expect_error}()},
 \code{\link{expect_length}()},
 \code{\link{expect_match}()},
-\code{\link{expect_message}()},
 \code{\link{expect_named}()},
 \code{\link{expect_null}()},
 \code{\link{expect_output}()},
+\code{\link{expect_reference}()},
 \code{\link{expect_silent}()},
 \code{\link{inheritance-expectations}},
 \code{\link{logical-expectations}}

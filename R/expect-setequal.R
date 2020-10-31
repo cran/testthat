@@ -1,9 +1,9 @@
-#' Expectation: do two vectors contain the same values?
+#' Does code return a vector containing the expected values?
 #'
 #' * `expect_setequal(x, y)` tests that every element of `x` occurs in `y`,
 #'    and that every element of `y` occurs in `x`.
 #' * `expect_mapequal(x, y)` tests that `x` and `y` have the same names, and
-#'    that `x[names(y)]` equals `x`.
+#'    that `x[names(y)]` equals `y`.
 #'
 #' Note that `expect_setequal()` ignores names, and you will be warned if both
 #' `object` and `expected` have them.

@@ -20,14 +20,12 @@
 #' @examples
 #' path <- testthat_example("success")
 #'
-#' # The default reporter - doesn't display well in examples because
-#' # it's designed to work in an interactive console.
 #' test_file(path)
-#'
 #' # Override the default by supplying the name of a reporter
 #' test_file(path, reporter = "minimal")
 Reporter <- R6::R6Class("Reporter",
   public = list(
+    capabilities = list(parallel_support = FALSE, parallel_updates = FALSE),
     start_reporter = function() {},
     start_context =  function(context) {},
     start_test =     function(context, test) {},
@@ -38,6 +36,11 @@ Reporter <- R6::R6Class("Reporter",
     end_reporter =   function() {},
     end_file =       function() {},
     is_full =        function() FALSE,
+    update =         function() {},
+
+    width = 80,
+    unicode = TRUE,
+    crayon = TRUE,
 
     out = NULL,
 
@@ -47,6 +50,22 @@ Reporter <- R6::R6Class("Reporter",
         # If writing to a file, overwrite it if it exists
         file.remove(self$out)
       }
+
+      # Capture at init so not affected by test settings
+      self$width <- cli::console_width()
+      self$unicode <- cli::is_utf8_output()
+      self$crayon <- crayon::has_color()
+    },
+
+    # To be used when the reporter needs to produce output inside of an active
+    # test, which is almost always from $add_result()
+    local_user_output = function(.env = parent.frame()) {
+      local_reproducible_output(
+        width = self$width,
+        crayon = self$crayon,
+        unicode = self$unicode,
+        .env = .env
+      )
     },
 
     cat_tight = function(...) {
@@ -76,7 +95,7 @@ Reporter <- R6::R6Class("Reporter",
 
       invisible()
     },
-    .end_context = function(context) {
+    end_context_if_started = function(context) {
       if (!is.null(self$.context)) {
         self$end_context(self$.context)
         self$.context <- NULL
@@ -89,17 +108,34 @@ Reporter <- R6::R6Class("Reporter",
 #' Retrieve the default reporter
 #'
 #' The defaults are:
-#' * [ProgressReporter] for interactive; override with `testthat.default_reporter`
+#' * [ProgressReporter] for interactive, non-parallel; override with
+#'   `testthat.default_reporter`
+#' * [ParallelProgressReporter] for interactive, parallel packages;
+#'   override with `testthat.default_parallel_reporter`
+#' * [CompactProgressReporter] for single-file interactive; override with
+#'   `testthat.default_compact_reporter`
 #' * [CheckReporter] for R CMD check; override with `testthat.default_check_reporter`
 #'
 #' @export
 #' @keywords internal
 default_reporter <- function() {
-  getOption("testthat.default_reporter", "progress")
+  getOption("testthat.default_reporter", "Progress")
+}
+
+#' @export
+#' @rdname default_reporter
+default_parallel_reporter <- function() {
+  getOption("testthat.default_parallel_reporter", "ParallelProgress")
+}
+
+#' @export
+#' @rdname default_reporter
+default_compact_reporter <- function() {
+  getOption("testthat.default_compact_reporter", "CompactProgress")
 }
 
 #' @export
 #' @rdname default_reporter
 check_reporter <- function() {
-  getOption("testthat.default_check_reporter", "check")
+  getOption("testthat.default_check_reporter", "Check")
 }

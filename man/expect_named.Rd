@@ -2,7 +2,7 @@
 % Please edit documentation in R/expect-named.R
 \name{expect_named}
 \alias{expect_named}
-\title{Expectation: does object have names?}
+\title{Does code return a vector with (given) names?}
 \usage{
 expect_named(
   object,
@@ -36,7 +36,7 @@ alternatives in \link{quasi_label}.}
 }
 \description{
 You can either check for the presence of names (leaving \code{expected}
-blank), specific names (by suppling a vector of names), or absence of
+blank), specific names (by supplying a vector of names), or absence of
 names (with \code{NULL}).
 }
 \examples{
@@ -58,9 +58,9 @@ Other expectations:
 \code{\link{expect_error}()},
 \code{\link{expect_length}()},
 \code{\link{expect_match}()},
-\code{\link{expect_message}()},
 \code{\link{expect_null}()},
 \code{\link{expect_output}()},
+\code{\link{expect_reference}()},
 \code{\link{expect_silent}()},
 \code{\link{inheritance-expectations}},
 \code{\link{logical-expectations}}

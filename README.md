@@ -7,10 +7,8 @@
 
 [![CRAN
 status](https://www.r-pkg.org/badges/version/testthat)](https://cran.r-project.org/package=testthat)
-[![Travis build
-status](https://travis-ci.org/r-lib/testthat.svg?branch=master)](https://travis-ci.org/r-lib/testthat)
-![R build
-status](https://github.com/r-lib/testthat/workflows/R-full/badge.svg)
+[![R build
+status](https://github.com/r-lib/testthat/workflows/R-CMD-check/badge.svg)](https://github.com/r-lib/testthat/actions)
 [![Codecov test
 coverage](https://codecov.io/gh/r-lib/testthat/branch/master/graph/badge.svg)](https://codecov.io/gh/r-lib/testthat?branch=master)
 <!-- badges: end -->
@@ -36,17 +34,17 @@ happen, testthat:
 
 testthat draws inspiration from the xUnit family of testing packages, as
 well as from many of the innovative ruby testing libraries, like
-[rspec](http://rspec.info/), [testy](https://github.com/ahoward/testy),
-[bacon](https://github.com/chneukirchen/bacon) and
+[rspec](https://rspec.info/), [testy](https://github.com/ahoward/testy),
+[bacon](https://github.com/leahneukirchen/bacon) and
 [cucumber](https://cucumber.io).
 
 testthat is the most popular unit testing package for R and is used by
 thousands of CRAN packages.
 
 If you’re not familiar with testthat, the [testing
-chapter](http://r-pkgs.had.co.nz/tests.html) in [R
-packages](http://r-pkgs.had.co.nz/) gives a good overview, along with
-workflow advice and concrete examples.
+chapter](https://r-pkgs.org/tests.html) in [R
+packages](https://r-pkgs.org) gives a good overview, along with workflow
+advice and concrete examples.
 
 ## Installation
 

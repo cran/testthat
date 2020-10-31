@@ -1,6 +1,3 @@
-#' @include reporter.R stack.R
-NULL
-
 #' Test reporter: summary of errors.
 #'
 #' This is a reporter designed for interactive usage: it lets you know which
@@ -31,6 +28,7 @@ SummaryReporter <- R6::R6Class("SummaryReporter",
                           max_reports = getOption("testthat.summary.max_reports", 10L),
                           ...) {
       super$initialize(...)
+      self$capabilities$parallel_support <- TRUE
       self$failures <- Stack$new()
       self$skips <- Stack$new()
       self$warnings <- Stack$new()
@@ -41,6 +39,10 @@ SummaryReporter <- R6::R6Class("SummaryReporter",
 
     is_full = function() {
       self$failures$size() >= self$max_reports
+    },
+
+    start_file = function(file) {
+      context_start_file(file)
     },
 
     start_context = function(context) {
@@ -140,3 +142,20 @@ SummaryReporter <- R6::R6Class("SummaryReporter",
 )
 
 labels <- c(1:9, letters, LETTERS)
+
+skip_summary <- function(x, label) {
+  header <- paste0(label, ". ", x$test)
+
+  paste0(
+    colourise(header, "skip"), " (", expectation_location(x), ") - ", x$message
+  )
+}
+
+failure_summary <- function(x, label, width = cli::console_width()) {
+  header <- paste0(label, ". ", issue_header(x))
+
+  paste0(
+    cli::rule(header, col = testthat_style("error")), "\n",
+    format(x)
+  )
+}

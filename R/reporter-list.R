@@ -1,7 +1,3 @@
-#' @include reporter.R
-NULL
-
-
 methods::setOldClass("proc_time")
 
 #' List reporter: gather all test results along with elapsed time and
@@ -22,6 +18,7 @@ ListReporter <- R6::R6Class("ListReporter",
 
     initialize = function() {
       super$initialize()
+      self$capabilities$parallel_support <- TRUE
       self$results <- Stack$new()
     },
 

@@ -1,6 +1,3 @@
-#' @include reporter.R
-NULL
-
 #' Test reporter: Teamcity format.
 #'
 #' This reporter will output results in the Teamcity message format.
@@ -13,6 +10,11 @@ TeamcityReporter <- R6::R6Class("TeamcityReporter",
   inherit = Reporter,
   public = list(
     i = NA_integer_,
+
+    initialize = function(...) {
+      super$initialize(...)
+      self$capabilities$parallel_support <- TRUE
+    },
 
     start_context = function(context) {
       private$report_event("testSuiteStarted", context)

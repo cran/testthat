@@ -2,7 +2,7 @@
 % Please edit documentation in R/expect-inheritance.R
 \name{expect_is}
 \alias{expect_is}
-\title{Expectation: does the object inherit from a given class?}
+\title{Does an object inherit from a given class?}
 \usage{
 expect_is(object, class, info = NULL, label = NULL)
 }
@@ -15,9 +15,18 @@ within a function or for loop. See \link{quasi_label} for more details.}
 \item{class}{character vector of class names}
 }
 \description{
+\ifelse{html}{\out{<a href='https://www.tidyverse.org/lifecycle/#superseded'><img src='figures/lifecycle-superseded.svg' alt='Superseded lifecycle'></a>}}{\strong{Superseded}}
+
 \code{expect_is()} is an older form that uses \code{\link[=inherits]{inherits()}} without checking
-whether \code{x} is S3, S4, or neither. Intead, I'd recommend using
+whether \code{x} is S3, S4, or neither. Instead, I'd recommend using
 \code{\link[=expect_type]{expect_type()}}, \code{\link[=expect_s3_class]{expect_s3_class()}} or \code{\link[=expect_s4_class]{expect_s4_class()}} to more clearly
 convey your  intent.
 }
+\section{3rd edition}{
+
+\ifelse{html}{\figure{lifecycle-deprecated.svg}{options: alt='Deprecated lifecycle'}}{\strong{Deprecated}}
+
+\code{expect_is()} is formally deprecated in the 3rd edition.
+}
+
 \keyword{internal}

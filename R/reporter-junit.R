@@ -1,6 +1,3 @@
-#' @include reporter.R
-NULL
-
 # To allow the Java-style class name format that Jenkins prefers,
 # "package_name_or_domain.ClassName", allow "."s in the class name.
 classnameOK <- function(text) {
@@ -58,9 +55,7 @@ JunitReporter <- R6::R6Class("JunitReporter",
     },
 
     start_reporter = function() {
-      if (!is_installed("xml2")) {
-        stop("Please install the `xml2` package", call. = FALSE)
-      }
+      check_installed("xml2", "JunitReporter")
 
       self$timer <- private$proctime()
       self$doc <- xml2::xml_new_document()
@@ -74,7 +69,7 @@ JunitReporter <- R6::R6Class("JunitReporter",
 
     start_test = function(context, test) {
       if (is.null(context)) {
-        context(context_name(self$file_name))
+        context_start_file(self$file_name)
       }
     },
 
@@ -115,19 +110,20 @@ JunitReporter <- R6::R6Class("JunitReporter",
       )
 
       first_line <- function(x) {
-        paste0(strsplit(x$message, split = "\n")[[1]][1], src_loc(x$srcref))
+        loc <- expectation_location(x)
+        paste0(strsplit(x$message, split = "\n")[[1]][1], " (", loc, ")")
       }
 
       # add an extra XML child node if not a success
       if (expectation_error(result)) {
         # "type" in Java is the exception class
         error <- xml2::xml_add_child(testcase, "error", type = "error", message = first_line(result))
-        xml2::xml_text(error) <- format(result)
+        xml2::xml_text(error) <- crayon::strip_style(format(result))
         self$errors <- self$errors + 1
       } else if (expectation_failure(result)) {
         # "type" in Java is the type of assertion that failed
         failure <- xml2::xml_add_child(testcase, "failure", type = "failure", message = first_line(result))
-        xml2::xml_text(failure) <- format(result)
+        xml2::xml_text(failure) <- crayon::strip_style(format(result))
         self$failures <- self$failures + 1
       } else if (expectation_skip(result)) {
         xml2::xml_add_child(testcase, "skipped")
@@ -159,4 +155,28 @@ JunitReporter <- R6::R6Class("JunitReporter",
       Sys.info()[["nodename"]]
     }
   ) # private
+)
+
+# Fix components of JunitReporter that otherwise vary from run-to-run
+#
+# The following functions need to be mocked out to run a unit test
+# against static contents of reporters/junit.txt:
+#   - proctime - originally wrapper for proc.time()
+#   - timestamp - originally wrapper for toString(Sys.time())
+#   - hostname  - originally wrapper for Sys.info()[["nodename"]]
+#
+JunitReporterMock <- R6::R6Class("JunitReporterMock",
+  inherit = JunitReporter,
+  public  = list(),
+  private = list(
+    proctime = function() {
+      c(user = 0, system = 0, elapsed = 0)
+    },
+    timestamp = function() {
+      "1999:12:31 23:59:59"
+    },
+    hostname = function() {
+      "nodename"
+    }
+  )
 )

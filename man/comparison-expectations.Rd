@@ -6,7 +6,7 @@
 \alias{expect_lte}
 \alias{expect_gt}
 \alias{expect_gte}
-\title{Expectation: is returned value less or greater than specified value?}
+\title{Does code return a number greater/less than the expected value?}
 \usage{
 expect_lt(object, expected, label = NULL, expected.label = NULL)
 
@@ -32,7 +32,7 @@ use only.}
 use only.}
 }
 \description{
-Expectation: is returned value less or greater than specified value?
+Does code return a number greater/less than the expected value?
 }
 \examples{
 a <- 9
@@ -54,10 +54,10 @@ Other expectations:
 \code{\link{expect_error}()},
 \code{\link{expect_length}()},
 \code{\link{expect_match}()},
-\code{\link{expect_message}()},
 \code{\link{expect_named}()},
 \code{\link{expect_null}()},
 \code{\link{expect_output}()},
+\code{\link{expect_reference}()},
 \code{\link{expect_silent}()},
 \code{\link{inheritance-expectations}},
 \code{\link{logical-expectations}}

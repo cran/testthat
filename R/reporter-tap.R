@@ -1,6 +1,3 @@
-#' @include reporter.R
-NULL
-
 #' Test reporter: TAP format.
 #'
 #' This reporter will output results in the Test Anything Protocol (TAP),
@@ -16,6 +13,11 @@ TapReporter <- R6::R6Class("TapReporter",
     n = 0L,
     has_tests = FALSE,
     contexts = NA_character_,
+
+    initialize = function(...) {
+      super$initialize(...)
+      self$capabilities$parallel_support <- TRUE
+    },
 
     start_context = function(context) {
       self$contexts[self$n + 1] <- context
