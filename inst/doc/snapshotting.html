@@ -26,7 +26,14 @@
     </style>
 
 
-<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
@@ -162,7 +169,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expect_equal</span>(<span class="fu">bullets</span>(<span class="st">&quot;a&quot;</span>, <span class="at">id =</span> <span class="st">&quot;x&quot;</span>), <span class="st">&quot;&lt;ul id=</span><span class="sc">\&quot;</span><span class="st">x</span><span class="sc">\&quot;</span><span class="st">&gt;</span><span class="sc">\n</span><span class="st">  &lt;li&gt;a&lt;/li&gt;</span><span class="sc">\n</span><span class="st">&lt;/ul&gt;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>})</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Test passed 🥇</span></span></code></pre></div>
-<p>This is a great place to use snapshot testing. To do this we make two changes to our code: we use <code>expect_snapshot_output()</code> instead of <code>expect_equal()</code>, and wrap the call in <code>cat()</code> (to avoid <code>[1]</code> in the output, like I my first interactive example).</p>
+<p>This is a great place to use snapshot testing. To do this we make two changes to our code: we use <code>expect_snapshot_output()</code> instead of <code>expect_equal()</code>, and wrap the call in <code>cat()</code> (to avoid <code>[1]</code> in the output, like in my first interactive example).</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">test_that</span>(<span class="st">&quot;bullets&quot;</span>, {</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expect_snapshot_output</span>(<span class="fu">cat</span>(<span class="fu">bullets</span>(<span class="st">&quot;a&quot;</span>)))</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expect_snapshot_output</span>(<span class="fu">cat</span>(<span class="fu">bullets</span>(<span class="st">&quot;a&quot;</span>, <span class="st">&quot;b&quot;</span>)))</span>
@@ -178,7 +185,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; &lt;ul id=&quot;b&quot;&gt;</span></span>
 <span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;li&gt;a&lt;/li&gt;</span></span>
 <span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; &lt;/ul&gt;</span></span></code></pre></div>
-<p>We we run the test for the first time, it automatically generates reference output, and prints it, so that you can visually confirm that it’s correct. The output is automatically saved in <code>_snaps/{name}.R</code>. The name of the snapshot matches your test file name — e.g. if your test is <code>test-pizza.R</code> then your snapshot will be saved in <code>test/testthat/_snaps/pizza.md</code>. As the file name suggests, this is a markdown file, which I’ll explain shortly.</p>
+<p>When we run the test for the first time, it automatically generates reference output, and prints it, so that you can visually confirm that it’s correct. The output is automatically saved in <code>_snaps/{name}.R</code>. The name of the snapshot matches your test file name — e.g. if your test is <code>test-pizza.R</code> then your snapshot will be saved in <code>test/testthat/_snaps/pizza.md</code>. As the file name suggests, this is a markdown file, which I’ll explain shortly.</p>
 <p>If you run the test again, it’ll succeed:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">test_that</span>(<span class="st">&quot;bullets&quot;</span>, {</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expect_snapshot_output</span>(<span class="fu">cat</span>(<span class="fu">bullets</span>(<span class="st">&quot;a&quot;</span>)))</span>
