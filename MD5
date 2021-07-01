@@ -1,7 +1,7 @@
-8b01a035e0520f4ab9bf1de810b60495 *DESCRIPTION
+1e3181c8285604f38771f4f822d0fb21 *DESCRIPTION
 41b239837eef8d4c02659f86d53fe802 *LICENSE
 d7c2164f15eb08ab493893007c09e151 *NAMESPACE
-54f9d49fe0c9488fec17e43c004b4f1a *NEWS.md
+48a07c94a1188847142fa62f5dc3b887 *NEWS.md
 802e34f0c6eadc2ad197a17bc4888644 *R/auto-test.R
 55766c2ac7eb9a8811250db36930b399 *R/capture-output.R
 a12d0207725ffcd7e675deb942f57324 *R/colour-text.R
@@ -60,7 +60,7 @@ a49978513ce010c6edfe2ff895cf631c *R/snapshot-file.R
 3286fa19808cfc2f1996cd013b7a75cb *R/snapshot-manage.R
 f721b35765f8be7d3ba6030c64f11d04 *R/snapshot-reporter.R
 cb1471d102e27b6fe0ca9bd3be9506fc *R/snapshot-serialize.R
-ed640d115280e0e7e7e9aedfcbd7a13b *R/snapshot.R
+6bddc2519878a62f7e936e4d43457316 *R/snapshot.R
 fa5a98888231d394a1088b6ed28cbc04 *R/source.R
 0e8e617e8f105c742610b1146e5c71d9 *R/stack.R
 ac841635d360c58c3f2bf2b9536a6d35 *R/teardown.R
@@ -82,7 +82,7 @@ f8d4367dbd02dc722d031eb0bacfa70c *README.md
 cd1f5828e307a856f2844936aea84ef9 *inst/CITATION
 dd843ceb5a1b0bdde93647b4659fe17a *inst/doc/custom-expectation.R
 f1f467f495c3579da4b55332fa07a8c3 *inst/doc/custom-expectation.Rmd
-53d0ab1fdb615e2c77c1d359d1459590 *inst/doc/custom-expectation.html
+a7f502756830f2267d33a74a66cce812 *inst/doc/custom-expectation.html
 d76c7a669f99acd6eb21ddc5529934fe *inst/doc/parallel.R
 7e876d3d1dd249fa7452e42f93ce6238 *inst/doc/parallel.Rmd
 53fc07e9bc7e9b848d8f267f60e4b1ce *inst/doc/parallel.html
@@ -102,7 +102,7 @@ ed45145c1614d3c86f338068e2481413 *inst/doc/third-edition.R
 522cf134c79624117d579f2c4d18f42b *inst/examples/test-success.R
 543392950ccc39ed50ebf26c75de0910 *inst/include/testthat.h
 6fedbe5ace0d8e58a00b296d75b4c83f *inst/include/testthat/testthat.h
-fc5d10bd5f62f9aa27e54f1caf90ffab *inst/include/testthat/vendor/catch.h
+ed1eab7fc6a36a53aa5170c5b5923e2e *inst/include/testthat/vendor/catch.h
 f481e7613929d4968a4a4c73031f7967 *inst/resources/catch-routine-registration.R
 f35a879e88834e75aee99fc9817547a0 *inst/resources/test-cpp.R
 3332a4affe5b211b37b65a3d3311d9ba *inst/resources/test-example.cpp
@@ -361,10 +361,11 @@ a59a0a456397a6f888e602e70ca15b94 *tests/testthat/test-reporter-zzz.R
 c6120d2faef4f6cbbef31b823a107c36 *tests/testthat/test-skip.R
 7d882003aa0267ac736a76b505258872 *tests/testthat/test-snapshot-file.R
 cc2abe045f04b9200faca8d10ea11437 *tests/testthat/test-snapshot-manage.R
-aca72b74784b567f66e8a16ab0546472 *tests/testthat/test-snapshot-reporter.R
+38afee3f520b4872f66044055582b0e9 *tests/testthat/test-snapshot-reporter.R
 a2781f2ecdbc84d1292709a7c5778c62 *tests/testthat/test-snapshot-serialize.R
 d00906f73a34f942be52697972a197ea *tests/testthat/test-snapshot.R
 5d4b8e95ddde21af7c298512f1012c35 *tests/testthat/test-snapshot/_snaps/snapshot.md
+797943912637f1bcd858ab419f74e152 *tests/testthat/test-snapshot/test-expect-condition.R
 2bb5aca20c88188e301a72c26d6ef087 *tests/testthat/test-snapshot/test-snapshot.R
 c4a62cd162daf6fccc348f9cbe7d7486 *tests/testthat/test-source.R
 6addb8da099d18560d99764513cb07a5 *tests/testthat/test-source_dir.R
