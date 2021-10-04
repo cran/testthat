@@ -9,8 +9,7 @@ set.seed(1014)
 library(testthat)
 
 ## ----include = FALSE----------------------------------------------------------
-snapper <- testthat:::SnapshotReporter$new()
-options(testthat.snapshotter = snapper)
+snapper <- local_snapshotter()
 snapper$start_file("snapshotting.Rmd", "test")
 
 ## -----------------------------------------------------------------------------
@@ -51,7 +50,7 @@ test_that("bullets", {
 snapper$end_file()
 snapper$start_file("snapshotting.Rmd", "test")
 
-## -----------------------------------------------------------------------------
+## ---- error = TRUE------------------------------------------------------------
 bullets <- function(text, id = NULL) {
   paste0(
     "<ul", if (!is.null(id)) paste0(" id=\"", id, "\""), ">\n", 
@@ -76,7 +75,7 @@ test_that("f() makes lots of noice", {
   expect_snapshot(f())
 })
 
-## -----------------------------------------------------------------------------
+## ---- error = TRUE------------------------------------------------------------
 test_that("you can't add a number and a letter", {
   expect_snapshot(1 + "a")
 })
@@ -94,7 +93,4 @@ test_that("you can't add weird thngs", {
     mean + sum
   })
 })
-
-## ---- include = FALSE---------------------------------------------------------
-snapper$snaps_cleanup()
 

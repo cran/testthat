@@ -151,18 +151,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>The usual way to activate the 3rd edition is to add a line to your <code>DESCRIPTION</code>:</p>
 <pre><code>Config/testthat/edition: 3</code></pre>
 <p>This will activate the 3rd edition for every test in your package.</p>
-<p>You can also control the edition used for indvidual tests with <code>testthat::local_edition()</code>:</p>
+<p>You can also control the edition used for individual tests with <code>testthat::local_edition()</code>:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">test_that</span>(<span class="st">&quot;I can use the 3rd edition&quot;</span>, {</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">local_edition</span>(<span class="dv">3</span>)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expect_true</span>(<span class="cn">TRUE</span>)</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Test passed 🎉</span></span></code></pre></div>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Test passed 🥇</span></span></code></pre></div>
 <p>This is also useful if you’ve switched to the 3rd edition and have a couple of tests that fail. You can use <code>local_edition(2)</code> to revert back to the old behaviour, giving you some breathing room to figure out the underlying issue.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">test_that</span>(<span class="st">&quot;I want to use the 2nd edition&quot;</span>, {</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">local_edition</span>(<span class="dv">2</span>)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expect_true</span>(<span class="cn">TRUE</span>)</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Test passed 🎊</span></span></code></pre></div>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Test passed 🎉</span></span></code></pre></div>
 </div>
 <div id="changes" class="section level2">
 <h2>Changes</h2>
@@ -179,12 +179,54 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><p><code>context()</code> is formally deprecated. testthat has been moving away from <code>context()</code> in favour of file names for quite some time, and now you’ll be strongly encouraged remove these calls from your tests.</p></li>
 <li><p><code>expect_is()</code> is deprecated in favour of the more specific <code>expect_type()</code>, <code>expect_s3_class()</code>, and <code>expect_s4_class()</code>. This ensures that you check the expected class along with the expected OO system.</p></li>
 <li><p>The very old <code>expect_that()</code> syntax is now deprecated. This was an overly clever API that I regretted even before the release of testthat 1.0.0.</p></li>
-<li><p><code>expect_equivalent()</code> has been deprecated since it is now equivalent (HA HA) to <code>expect_equal(ignore_attr = TRUE)</code>.</p></li>
+<li><p><code>expect_equivalent()</code> has been deprecated since it is now equivalent (HA HA) to <code>expect_equal(ignore_attr = TRUE)</code>. The main difference is that it won’t ignore names; so you’ll need an explicit <code>unname()</code> if you deliberately want to ignore names.</p></li>
 <li><p><code>setup()</code> and <code>teardown()</code> are deprecated in favour of test fixtures. See <code>vignette(&quot;test-fixtures&quot;)</code> for details.</p></li>
 <li><p><code>expect_known_output()</code>, <code>expect_known_value()</code>, <code>expect_known_hash()</code>, and <code>expect_equal_to_reference()</code> are all deprecated in favour of <code>expect_snapshot_output()</code> and <code>expect_snapshot_value()</code>.</p></li>
 <li><p><code>with_mock()</code> and <code>local_mock()</code> are deprecated; please use the <a href="https://krlmlr.github.io/mockr/">mockr</a> or <a href="https://github.com/r-lib/mockery#mockery">mockery</a> instead.</p></li>
 </ul>
 <p>Fixing these deprecation warnings should be straightforward.</p>
+</div>
+<div id="warnings" class="section level3">
+<h3>Warnings</h3>
+<p>In the second edition, <code>expect_warning()</code> swallows all warnings regardless of whether or not they match the <code>regexp</code> or <code>class</code>:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>f <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">warning</span>(<span class="st">&quot;First warning&quot;</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">warning</span>(<span class="st">&quot;Second warning&quot;</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">warning</span>(<span class="st">&quot;Third warning&quot;</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">local_edition</span>(<span class="dv">2</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="fu">expect_warning</span>(<span class="fu">f</span>(), <span class="st">&quot;First&quot;</span>)</span></code></pre></div>
+<p>In the third edition, <code>expect_warning()</code> captures at most one warning so the others will bubble up:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">local_edition</span>(<span class="dv">3</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">expect_warning</span>(<span class="fu">f</span>(), <span class="st">&quot;First&quot;</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning in f(): Second warning</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning in f(): Third warning</span></span></code></pre></div>
+<p>You can either add additional expectations to catch these warnings, or silence them all with <code>supressWarnings()</code>:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">f</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expect_warning</span>(<span class="st">&quot;First&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expect_warning</span>(<span class="st">&quot;Second&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expect_warning</span>(<span class="st">&quot;Third&quot;</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">f</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expect_warning</span>(<span class="st">&quot;First&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">suppressWarnings</span>()</span></code></pre></div>
+<p>Alternatively, you might want to capture them all in a snapshot test:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">test_that</span>(<span class="st">&quot;f() produces expected outputs/messages/warnings&quot;</span>, {</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expect_snapshot</span>(<span class="fu">f</span>())  </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Can&#39;t compare snapshot to reference when testing interactively</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; i Run `devtools::test()` or `testthat::test_file()` to see changes</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; i Current value:</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Code</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   f()</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Warning &lt;simpleWarning&gt;</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   First warning</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Second warning</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Third warning</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ── Skip (???): f() produces expected outputs/messages/warnings ─────────────────</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Reason: empty test</span></span></code></pre></div>
+<p>The same principle also applies to <code>expect_message()</code>, but message handling has changed in a more radical way, as described next.</p>
 </div>
 <div id="messages" class="section level3">
 <h3>Messages</h3>
@@ -193,25 +235,25 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="waldo" class="section level3">
 <h3>waldo</h3>
 <p>Probably the biggest day-to-day difference (and the biggest reason to upgrade!) is the use of <a href="https://waldo.r-lib.org/reference/compare.html"><code>waldo::compare()</code></a> inside of <code>expect_equal()</code> and <code>expect_identical()</code>. The goal of waldo is to find and concisely describe the difference between a pair of R objects, and it’s designed specifically to help you figure out what’s gone wrong in your unit tests.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>f1 <span class="ot">&lt;-</span> <span class="fu">factor</span>(letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>])</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>f2 <span class="ot">&lt;-</span> <span class="fu">ordered</span>(letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>], <span class="at">levels =</span> letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>])</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">local_edition</span>(<span class="dv">2</span>)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">expect_equal</span>(f1, f2)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Error: `f1` not equal to `f2`.</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Attributes: &lt; Component &quot;class&quot;: Lengths (1, 2) differ (string compare on first 1) &gt;</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Attributes: &lt; Component &quot;class&quot;: 1 string mismatch &gt;</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Attributes: &lt; Component &quot;levels&quot;: Lengths (3, 4) differ (string compare on first 3) &gt;</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="fu">local_edition</span>(<span class="dv">3</span>)</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="fu">expect_equal</span>(f1, f2)</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Error: `f1` (`actual`) not equal to `f2` (`expected`).</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; `class(actual)`:             &quot;factor&quot;</span></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; `class(expected)`: &quot;ordered&quot; &quot;factor&quot;</span></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; `levels(actual)`:   &quot;a&quot; &quot;b&quot; &quot;c&quot;    </span></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; `levels(expected)`: &quot;a&quot; &quot;b&quot; &quot;c&quot; &quot;d&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>f1 <span class="ot">&lt;-</span> <span class="fu">factor</span>(letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>])</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>f2 <span class="ot">&lt;-</span> <span class="fu">ordered</span>(letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>], <span class="at">levels =</span> letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>])</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">local_edition</span>(<span class="dv">2</span>)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">expect_equal</span>(f1, f2)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Error: `f1` not equal to `f2`.</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Attributes: &lt; Component &quot;class&quot;: Lengths (1, 2) differ (string compare on first 1) &gt;</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Attributes: &lt; Component &quot;class&quot;: 1 string mismatch &gt;</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Attributes: &lt; Component &quot;levels&quot;: Lengths (3, 4) differ (string compare on first 3) &gt;</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="fu">local_edition</span>(<span class="dv">3</span>)</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="fu">expect_equal</span>(f1, f2)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Error: `f1` (`actual`) not equal to `f2` (`expected`).</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; `class(actual)`:   &quot;factor&quot;          </span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; `class(expected)`: &quot;ordered&quot; &quot;factor&quot;</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; `levels(actual)`:   &quot;a&quot; &quot;b&quot; &quot;c&quot;    </span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; `levels(expected)`: &quot;a&quot; &quot;b&quot; &quot;c&quot; &quot;d&quot;</span></span></code></pre></div>
 <p>waldo looks even better in your console because it carefully uses colours to help highlight the differences.</p>
 <p>The use of waldo also makes precise the difference between <code>expect_equal()</code> and <code>expect_identical()</code>: <code>expect_equal()</code> sets <code>tolerance</code> so that waldo will ignore small numerical differences arising from floating point computation. Otherwise the functions are identical (HA HA).</p>
 <p>This change is likely to result in the most work during an upgrade, because waldo can give slightly different results to both <code>identical()</code> and <code>all.equal()</code> in moderately common situations. I believe on the whole the differences are meaningful and useful, so you’ll need to handle them by tweaking your tests. The following changes are most likely to affect you:</p>
@@ -219,19 +261,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><p><code>expect_equal()</code> previously ignored the environments of formulas and functions. This is most like to arise if you are testing models. It’s worth thinking about what the correct values should be, but if that is to annoying you can opt out of the comparison with <code>ignore_function_env</code> or <code>ignore_formula_env</code>.</p></li>
 <li><p><code>expect_equal()</code> used a combination of <code>all.equal()</code> and a home-grown <code>testthat::compare()</code> which unfortunately used a slightly different definition of tolerance. Now <code>expect_equal()</code> always uses the same defintion of tolerance everywhere, which may require tweaks to your exising tolerance values.</p></li>
 <li><p><code>expect_equal()</code> previously ignored timezone differences when one object had the current timezone set implicitly (with <code>&quot;&quot;</code>) and the other had it set explictly:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>dt1 <span class="ot">&lt;-</span> dt2 <span class="ot">&lt;-</span> <span class="fu">ISOdatetime</span>(<span class="dv">2020</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">0</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">attr</span>(dt1, <span class="st">&quot;tzone&quot;</span>) <span class="ot">&lt;-</span> <span class="st">&quot;&quot;</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">attr</span>(dt2, <span class="st">&quot;tzone&quot;</span>) <span class="ot">&lt;-</span> <span class="fu">Sys.timezone</span>()</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">local_edition</span>(<span class="dv">2</span>)</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="fu">expect_equal</span>(dt1, dt2)</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="fu">local_edition</span>(<span class="dv">3</span>)</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="fu">expect_equal</span>(dt1, dt2)</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Error: `dt1` (`actual`) not equal to `dt2` (`expected`).</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; `attr(actual, &#39;tzone&#39;)`:   &quot;&quot;               </span></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; `attr(expected, &#39;tzone&#39;)`: &quot;Europe/Brussels&quot;</span></span></code></pre></div></li>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>dt1 <span class="ot">&lt;-</span> dt2 <span class="ot">&lt;-</span> <span class="fu">ISOdatetime</span>(<span class="dv">2020</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">0</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">attr</span>(dt1, <span class="st">&quot;tzone&quot;</span>) <span class="ot">&lt;-</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">attr</span>(dt2, <span class="st">&quot;tzone&quot;</span>) <span class="ot">&lt;-</span> <span class="fu">Sys.timezone</span>()</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="fu">local_edition</span>(<span class="dv">2</span>)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="fu">expect_equal</span>(dt1, dt2)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="fu">local_edition</span>(<span class="dv">3</span>)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="fu">expect_equal</span>(dt1, dt2)</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Error: `dt1` (`actual`) not equal to `dt2` (`expected`).</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; `attr(actual, &#39;tzone&#39;)`:   &quot;&quot;               </span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; `attr(expected, &#39;tzone&#39;)`: &quot;America/Chicago&quot;</span></span></code></pre></div></li>
 </ul>
 </div>
 <div id="reproducible-output" class="section level3">

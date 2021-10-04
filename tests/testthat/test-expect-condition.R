@@ -132,6 +132,40 @@ test_that("only matching condition is captured, others bubble up", {
   expect_error(expect_condition(f2(), "Hi"), "Bye")
 })
 
+test_that("cnd expectations consistently return condition (#1371)", {
+  f <- function(out, action) {
+    action
+    out
+  }
+
+  expect_s3_class(expect_message(f(NULL, message(""))), "simpleMessage")
+  expect_s3_class(expect_warning(f(NULL, warning(""))), "simpleWarning")
+  expect_s3_class(expect_error(f(NULL, stop(""))), "simpleError")
+
+  # Used to behave differently with non-`NULL` values
+  expect_s3_class(expect_message(f("return value", message(""))), "simpleMessage")
+  expect_s3_class(expect_warning(f("return value", warning(""))), "simpleWarning")
+  expect_s3_class(expect_error(f("return value", stop(""))), "simpleError")
+
+  # If there is no condition expected we return the value
+  expect_equal(expect_message(f("return value", NULL), regexp = NA), "return value")
+  expect_equal(expect_warning(f("return value", NULL), regexp = NA), "return value")
+  expect_equal(expect_error(f("return value", NULL), regexp = NA), "return value")
+})
+
+test_that("cli width wrapping doesn't affect text matching", {
+  skip_if_not_installed("cli", "3.0.2")
+  skip_if_not_installed("rlang", "1.0.0")
+
+  local_use_cli()
+
+  expect_error(
+    abort("foobarbaz foobarbaz foobarbaz foobarbaz foobarbaz foobarbaz foobarbaz foobarbaz foobarbaz foobarbaz foobarbaz"),
+    "foobarbaz foobarbaz foobarbaz foobarbaz foobarbaz foobarbaz foobarbaz foobarbaz foobarbaz foobarbaz foobarbaz"
+  )
+})
+
+
 # second edition ----------------------------------------------------------
 
 test_that("other conditions are swallowed", {

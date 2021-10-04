@@ -1,6 +1,6 @@
 Package: testthat
 Title: Unit Testing for R
-Version: 3.0.4
+Version: 3.1.0
 Authors@R: 
     c(person(given = "Hadley",
              family = "Wickham",
@@ -11,10 +11,10 @@ Authors@R:
       person(given = "R Core team",
              role = "ctb",
              comment = "Implementation of utils::recover()"))
-Description: Software testing is important, but, in part because
-    it is frustrating and boring, many of us avoid it. 'testthat' is a
-    testing framework for R that is easy to learn and use, and integrates
-    with your existing 'workflow'.
+Description: Software testing is important, but, in part because it is
+    frustrating and boring, many of us avoid it. 'testthat' is a testing
+    framework for R that is easy to learn and use, and integrates with
+    your existing 'workflow'.
 License: MIT + file LICENSE
 URL: https://testthat.r-lib.org, https://github.com/r-lib/testthat
 BugReports: https://github.com/r-lib/testthat/issues
@@ -28,15 +28,14 @@ Suggests: covr, curl (>= 0.9.5), diffviewer (>= 0.1.0), knitr, mockery,
         rmarkdown, rstudioapi, shiny, usethis, vctrs (>= 0.1.0), xml2
 VignetteBuilder: knitr
 Config/testthat/edition: 3
-Config/testthat/parallel: true
 Config/testthat/start-first: watcher, parallel*
 Encoding: UTF-8
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 NeedsCompilation: yes
-Packaged: 2021-06-30 11:11:03 UTC; lionel
+Packaged: 2021-10-01 12:44:13 UTC; hadley
 Author: Hadley Wickham [aut, cre],
   RStudio [cph, fnd],
   R Core team [ctb] (Implementation of utils::recover())
 Maintainer: Hadley Wickham <hadley@rstudio.com>
 Repository: CRAN
-Date/Publication: 2021-07-01 07:00:02 UTC
+Date/Publication: 2021-10-04 08:30:02 UTC

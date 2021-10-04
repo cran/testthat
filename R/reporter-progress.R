@@ -46,7 +46,7 @@ ProgressReporter <- R6::R6Class("ProgressReporter",
     file_name = "",
 
     initialize = function(show_praise = TRUE,
-                          max_failures = getOption("testthat.progress.max_fails", 10L),
+                          max_failures = testthat_max_fails(),
                           min_time = 0.1,
                           update_interval = 0.1,
                           verbose_skips = getOption("testthat.progress.verbose_skips", TRUE),
@@ -98,11 +98,12 @@ ProgressReporter <- R6::R6Class("ProgressReporter",
 
     show_header = function() {
       self$cat_line(
-        cli::symbol$tick, " |  OK ",
+        colourise(cli::symbol$tick, "success"), " | ",
         colourise("F", "failure"), " ",
         colourise("W", "warning"), " ",
-        colourise("S", "skip"), " | ",
-        "Context"
+        colourise("S", "skip"), " ",
+        colourise(" OK", "success"),
+        " | ", "Context"
       )
     },
 
@@ -142,22 +143,23 @@ ProgressReporter <- R6::R6Class("ProgressReporter",
         if (n == 0) {
           " "
         } else {
-          n
+          colourise(n, type)
         }
       }
 
       message <- paste0(
-        status, " | ", sprintf("%3d", data$n_ok), " ",
+        status, " | ",
         col_format(data$n_fail, "fail"), " ",
         col_format(data$n_warn, "warn"), " ",
-        col_format(data$n_skip, "skip"), " | ",
-        data$name
+        col_format(data$n_skip, "skip"), " ",
+        sprintf("%3d", data$n_ok),
+        " | ", data$name
       )
 
       if (complete && time > self$min_time) {
         message <- paste0(
           message,
-          cli::col_cyan(sprintf(" [%.1f s]", time))
+          cli::col_grey(sprintf(" [%.1fs]", time))
         )
       }
 
@@ -187,6 +189,18 @@ ProgressReporter <- R6::R6Class("ProgressReporter",
       self$show_status(complete = TRUE, time = time[[3]])
 
       self$report_issues(self$ctxt_issues)
+
+      if (self$is_full()) {
+        snapshotter <- get_snapshotter()
+        if (!is.null(snapshotter)) {
+          snapshotter$end_file()
+        }
+
+        stop_reporter(paste0(
+          "Maximum number of failures exceeded; quitting at end of file.\n",
+          "Increase this number with (e.g.) `Sys.setenv('TESTTHAT_MAX_FAILS' = Inf)`"
+        ))
+      }
     },
 
     add_result = function(context, test, result) {
@@ -210,15 +224,6 @@ ProgressReporter <- R6::R6Class("ProgressReporter",
       } else {
         self$n_ok <- self$n_ok + 1
         self$ctxt_n_ok <- self$ctxt_n_ok + 1
-      }
-
-      if (self$is_full()) {
-        self$local_user_output()
-        self$end_context()
-        stop_reporter(paste0(
-          "Maximum number of failures exceeded; quitting early.\n",
-          "You can increase this number by setting `options(testthat.progress.max_fails)`"
-        ))
       }
 
       self$show_status()
@@ -294,6 +299,16 @@ ProgressReporter <- R6::R6Class("ProgressReporter",
     }
   )
 )
+
+testthat_max_fails <- function() {
+  val <- getOption("testthat.progress.max_fails")
+
+  if (is.null(val)) {
+    env <- Sys.getenv("TESTTHAT_MAX_FAILS")
+    val <- if (!identical(env, "")) as.numeric(env) else 10
+  }
+  val
+}
 
 #' @export
 #' @rdname ProgressReporter
@@ -383,7 +398,7 @@ ParallelProgressReporter <- R6::R6Class("ParallelProgressReporter",
         self$files[[file]] <- list(
           issues = Stack$new(),
           n_fail = 0L,
-          n_skip_ = 0L,
+          n_skip = 0L,
           n_warn = 0L,
           n_ok = 0L,
           name = context_name(file),
@@ -439,7 +454,7 @@ ParallelProgressReporter <- R6::R6Class("ParallelProgressReporter",
         self$files[[file]]$issues$push(result)
       } else if (expectation_skip(result)) {
         self$n_skip <- self$n_skip + 1
-        self$files[[file]]$n_skip_ <- self$files[[file]]$n_skip_ + 1L
+        self$files[[file]]$n_skip <- self$files[[file]]$n_skip + 1L
         if (self$verbose_skips) {
           self$files[[file]]$issues$push(result)
         }
@@ -508,7 +523,10 @@ strpad <- function(x, width = cli::console_width()) {
 }
 
 skip_bullets <- function(skips) {
-  skips <- gsub("Reason: ", "", unlist(skips))
+  skips <- unlist(skips)
+  skips <- gsub("Reason: ", "", skips)
+  skips <- gsub(":?\n(\n|.)+", "", skips) # only show first line
+
   tbl <- table(skips)
   paste0(cli::symbol$bullet, " ", names(tbl), " (", tbl, ")")
 }
