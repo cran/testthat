@@ -96,6 +96,22 @@
 
     This is a warning
 
+# snapshot captures deprecations
+
+    Code
+      foo()
+    Condition
+      Warning:
+      `foo()` was deprecated in testthat 1.0.0.
+
+---
+
+    `foo()` was deprecated in testthat 1.0.0.
+
+---
+
+    `foo()` was deprecated in testthat 1.0.0.
+
 # can check error/warning classes
 
     Code
@@ -241,13 +257,13 @@
 # hint is informative
 
     Code
-      cat(snapshot_accept_hint("_default", "bar.R"))
+      cat(snapshot_accept_hint("_default", "bar.R", reset_output = FALSE))
     Output
-      * Run `]8;;rstudio:run:testthat::snapshot_accept('bar.R')snapshot_accept('bar.R')]8;;` to accept the change
-      * Run `]8;;rstudio:run:testthat::snapshot_review('bar.R')snapshot_review('bar.R')]8;;` to interactively review the change
+      * Run ]8;;ide:run:testthat::snapshot_accept('bar.R')testthat::snapshot_accept('bar.R')]8;; to accept the change.
+      * Run ]8;;ide:run:testthat::snapshot_review('bar.R')testthat::snapshot_review('bar.R')]8;; to interactively review the change.
     Code
-      cat(snapshot_accept_hint("foo", "bar.R"))
+      cat(snapshot_accept_hint("foo", "bar.R", reset_output = FALSE))
     Output
-      * Run `]8;;rstudio:run:testthat::snapshot_accept('foo/bar.R')snapshot_accept('foo/bar.R')]8;;` to accept the change
-      * Run `]8;;rstudio:run:testthat::snapshot_review('foo/bar.R')snapshot_review('foo/bar.R')]8;;` to interactively review the change
+      * Run ]8;;ide:run:testthat::snapshot_accept('foo/bar.R')testthat::snapshot_accept('foo/bar.R')]8;; to accept the change.
+      * Run ]8;;ide:run:testthat::snapshot_review('foo/bar.R')testthat::snapshot_review('foo/bar.R')]8;; to interactively review the change.
 

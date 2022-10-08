@@ -6,7 +6,7 @@
 #' are available in the test `env` (e.g. via `load_package`).
 #'
 #' @section Special files:
-#' There are two types of `.R` file that have special behaviour:
+#' Certain `.R` files have special significance in testthat:
 #'
 #' * Test files start with `test` and are executed in alphabetical order.
 #'
@@ -15,14 +15,17 @@
 #'   `withr::defer(clean_up(), teardown_env())`. See `vignette("test-fixtures")`
 #'   for more details.
 #'
-#' There are two other types of special file that we no longer recommend using:
-#'
 #' * Helper files start with `helper` and are executed before tests are
-#'   run. They're also loaded by `devtools::load_all()`, so there's no
-#'   real point to them and you should just put your helper code in `R/`.
+#'   run and, unlike setup files, are also loaded by `devtools::load_all()`.
+#'   Helper files can be necessary for side-effect-y code that you need to run
+#'   when developing the package interactively. It's certainly possible to
+#'   define custom test utilities in a helper file, but they can usually be
+#'   defined below `R/`, just like any other internal function.
+#'
+#' There is another type of special file that we no longer recommend using:
 #'
 #' * Teardown files start with `teardown` and are executed after the tests
-#'   are run. Now we recommend interleave setup and cleanup code in `setup-`
+#'   are run. Now we recommend interleaving setup and cleanup code in `setup-`
 #'   files, making it easier to check that you automatically clean up every
 #'   mess that you make.
 #'
@@ -50,6 +53,12 @@
 #'   * "none", the default, doesn't load the package.
 #'   * "installed", uses [library()] to load an installed package.
 #'   * "source", uses [pkgload::load_all()] to a source package.
+#'     To configure the arguments passed to `load_all()`, add this
+#'     field in your DESCRIPTION file:
+#'
+#'     ```
+#'     Config/testthat/load-all: list(export_all = FALSE, helpers = FALSE)
+#'     ```
 #' @param wrap DEPRECATED
 #' @keywords internal
 #' @return A list (invisibly) containing data about the test results.
@@ -162,24 +171,35 @@ test_files <- function(test_dir,
     lifecycle::deprecate_warn("3.0.0", "test_dir(wrap = )")
   }
 
+  # Must keep these two blocks in sync
   if (parallel) {
-    test_files <- test_files_parallel
+    test_files_parallel(
+      test_dir = test_dir,
+      test_package = test_package,
+      test_paths = test_paths,
+      load_helpers = load_helpers,
+      reporter = reporter,
+      env = env,
+      stop_on_failure = stop_on_failure,
+      stop_on_warning = stop_on_warning,
+      wrap = wrap,
+      load_package = load_package
+    )
   } else {
-    test_files <- test_files_serial
+    test_files_serial(
+      test_dir = test_dir,
+      test_package = test_package,
+      test_paths = test_paths,
+      load_helpers = load_helpers,
+      reporter = reporter,
+      env = env,
+      stop_on_failure = stop_on_failure,
+      stop_on_warning = stop_on_warning,
+      wrap = wrap,
+      load_package = load_package
+    )
   }
 
-  test_files(
-    test_dir = test_dir,
-    test_package = test_package,
-    test_paths = test_paths,
-    load_helpers = load_helpers,
-    reporter = reporter,
-    env = env,
-    stop_on_failure = stop_on_failure,
-    stop_on_warning = stop_on_warning,
-    wrap = wrap,
-    load_package = load_package
-  )
 }
 
 test_files_serial <- function(test_dir,
@@ -214,13 +234,45 @@ test_files_setup_env <- function(test_package,
   library(testthat)
 
   load_package <- arg_match(load_package)
-  switch(load_package,
-    none = {},
-    installed = library(test_package, character.only = TRUE),
-    source = pkgload::load_all(test_dir, helpers = FALSE, quiet = TRUE)
-  )
+  if (load_package == "installed") {
+    library(test_package, character.only = TRUE)
+  } else if (load_package == "source") {
+    # Allow configuring what we export to the search path (#1636)
+    args <- find_load_all_args(test_dir)
+    pkgload::load_all(
+      test_dir,
+      export_all = args[["export_all"]],
+      helpers = args[["helpers"]],
+      quiet = TRUE
+    )
+  }
 
   env %||% test_env(test_package)
+}
+
+find_load_all_args <- function(path) {
+  default <- list(export_all = TRUE, helpers = TRUE)
+
+  desc <- find_description(path)
+  if (is.null(desc)) {
+    return(default)
+  }
+
+  args <- desc$get_field("Config/testthat/load-all", default = NULL)
+  if (is.null(args)) {
+    return(default)
+  }
+
+  args <- parse_expr(args)
+  if (!is_call(args, "list")) {
+    abort("`Config/testthat/load-all` must be a list.", call = NULL)
+  }
+
+  args <- as.list(args[-1])
+  list(
+    export_all = args[["export_all"]] %||% default[["export_all"]],
+    helpers = args[["helpers"]] %||% default[["helpers"]]
+  )
 }
 
 test_files_setup_state <- function(test_dir, test_package, load_helpers, env, .env = parent.frame()) {
@@ -287,6 +339,10 @@ test_one_file <- function(path, env = test_env(), wrap = TRUE) {
 #'
 #' @export
 teardown_env <- function() {
+  if (is.null(testthat_env$teardown_env)) {
+    abort("`teardown_env()` has not been initialized", .internal = TRUE)
+  }
+
   testthat_env$teardown_env
 }
 

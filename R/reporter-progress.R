@@ -125,9 +125,9 @@ ProgressReporter <- R6::R6Class("ProgressReporter",
       data <- self$status_data()
       if (complete) {
         if (data$n_fail > 0) {
-          status <- crayon::red(cli::symbol$cross)
+          status <- cli::col_red(cli::symbol$cross)
         } else {
-          status <- crayon::green(cli::symbol$tick)
+          status <- cli::col_green(cli::symbol$tick)
         }
       } else {
         # Do not print if not enough time has passed since we last printed.
@@ -168,7 +168,7 @@ ProgressReporter <- R6::R6Class("ProgressReporter",
 
       if (pad) {
         message <- strpad(message, self$width)
-        message <- crayon::col_substr(message, 1, self$width)
+        message <- cli::ansi_substr(message, 1, self$width)
       }
 
       if (!complete) {
@@ -206,9 +206,9 @@ ProgressReporter <- R6::R6Class("ProgressReporter",
           snapshotter$end_file()
         }
 
-        stop_reporter(paste0(
-          "Maximum number of failures exceeded; quitting at end of file.\n",
-          "Increase this number with (e.g.) `Sys.setenv('TESTTHAT_MAX_FAILS' = Inf)`"
+        stop_reporter(c(
+          "Maximum number of failures exceeded; quitting at end of file.",
+          i = "Increase this number with (e.g.) {.run testthat::set_max_fails(Inf)}"
         ))
       }
     },
@@ -246,7 +246,7 @@ ProgressReporter <- R6::R6Class("ProgressReporter",
         colourise(n, if (n == 0) "success" else type)
       }
 
-      self$rule(crayon::bold("Results"), line = 2)
+      self$rule(cli::style_bold("Results"), line = 2)
       time <- proc.time() - self$start_time
       if (time[[3]] > self$min_time) {
         self$cat_line("Duration: ", sprintf("%.1f s", time[[3]]), col = "cyan")
@@ -266,7 +266,7 @@ ProgressReporter <- R6::R6Class("ProgressReporter",
         self$rule("Terminated early", line = 2)
       }
 
-      if (!self$show_praise || runif(1) > 0.1) {
+      if (!self$show_praise || stats::runif(1) > 0.1) {
         return()
       }
 
@@ -325,11 +325,7 @@ testthat_max_fails <- function() {
 CompactProgressReporter <- R6::R6Class("CompactProgressReporter",
   inherit = ProgressReporter,
   public = list(
-    # Is this being run by RStudio's test file button?
-    rstudio = FALSE,
-
-    initialize = function(rstudio = FALSE, min_time = Inf, ...) {
-      self$rstudio <- rstudio
+    initialize = function(min_time = Inf, ...) {
       super$initialize(min_time = min_time, ...)
     },
 
@@ -369,7 +365,7 @@ CompactProgressReporter <- R6::R6Class("CompactProgressReporter",
       } else if (self$is_full()) {
         self$cat_line(" Terminated early")
       } else if (!self$rstudio) {
-        self$cat_line(crayon::bold(" Done!"))
+        self$cat_line(cli::style_bold(" Done!"))
       }
     },
 
@@ -491,7 +487,7 @@ ParallelProgressReporter <- R6::R6Class("ParallelProgressReporter",
         paste(context_name(names(self$files)), collapse = ", ")
       )
       message <- strpad(message, self$width)
-      message <- crayon::col_substr(message, 1, self$width)
+      message <- cli::ansi_substr(message, 1, self$width)
       self$cat_tight(self$cr(), message)
     }
   )
@@ -519,7 +515,7 @@ issue_header <- function(x, pad = FALSE) {
 }
 
 issue_summary <- function(x, rule = FALSE, simplify = "branch") {
-  header <- crayon::bold(issue_header(x))
+  header <- cli::style_bold(issue_header(x))
   if (rule) {
     header <- cli::rule(header, width = max(cli::ansi_nchar(header) + 6, 80))
   }
@@ -539,4 +535,17 @@ skip_bullets <- function(skips) {
 
   tbl <- table(skips)
   paste0(cli::symbol$bullet, " ", names(tbl), " (", tbl, ")")
+}
+
+
+#' Set maximum number of test failures allowed before aborting the run
+#'
+#' This sets the `TESTTHAT_MAX_FAILS` env var which will affect both the
+#' current R process and any processes launched from it.
+#'
+#' @param n Maximum number of failures allowed.
+#' @export
+#' @keywords internal
+set_max_fails <- function(n) {
+  Sys.setenv('TESTTHAT_MAX_FAILS' = n)
 }

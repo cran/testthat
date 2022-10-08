@@ -174,7 +174,7 @@ format.expectation <- function(x, simplify = "branch", ...) {
     ...,
     max_frames = max_frames
   )
-  lines <- c(x$message, crayon::bold("Backtrace:"), trace_lines)
+  lines <- c(x$message, cli::style_bold("Backtrace:"), trace_lines)
   paste(lines, collapse = "\n")
 }
 
@@ -257,7 +257,7 @@ single_letter_summary <- function(x) {
 }
 
 expectation_location <- function(x) {
-  if (is.null(x$srcref)) {
+  if (!inherits(x$srcref, "srcref")) {
     "???"
   } else {
     srcfile <- attr(x$srcref, "srcfile")
@@ -265,11 +265,7 @@ expectation_location <- function(x) {
     if (identical(filename, "")) {
       paste0("Line ", x$srcref[1])
     } else {
-      cli::style_hyperlink(
-        paste0(basename(filename), ":", x$srcref[1], ":", x$srcref[2]),
-        paste0("file://", file.path(srcfile$wd, filename)),
-        params = c(line = x$srcref[1], col = x$srcref[2])
-      )
+      cli::format_inline("{.file {filename}:{x$srcref[1]}}")
     }
   }
 }

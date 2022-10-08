@@ -10,7 +10,7 @@ test_package(package, reporter = check_reporter(), ...)
 
 test_check(package, reporter = check_reporter(), ...)
 
-test_local(path = ".", reporter = NULL, ...)
+test_local(path = ".", reporter = NULL, ..., load_package = "source")
 }
 \arguments{
 \item{package}{If these tests belong to a package, the name of the package.}
@@ -24,6 +24,18 @@ See \link{Reporter} for more details and a list of built-in reporters.}
 \item{...}{Additional arguments passed to \code{\link[=test_dir]{test_dir()}}}
 
 \item{path}{Path to directory containing tests.}
+
+\item{load_package}{Strategy to use for load package code:
+\itemize{
+\item "none", the default, doesn't load the package.
+\item "installed", uses \code{\link[=library]{library()}} to load an installed package.
+\item "source", uses \code{\link[pkgload:load_all]{pkgload::load_all()}} to a source package.
+To configure the arguments passed to \code{load_all()}, add this
+field in your DESCRIPTION file:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{Config/testthat/load-all: list(export_all = FALSE, helpers = FALSE)
+}\if{html}{\out{</div>}}
+}}
 }
 \value{
 A list (invisibly) containing data about the test results.
@@ -40,31 +52,36 @@ Tests live in \code{tests/testthat}.
 \section{\verb{R CMD check}}{
 
 To run testthat automatically from \verb{R CMD check}, make sure you have
-a \code{tests/testthat.R} that contains:\preformatted{library(testthat)
+a \code{tests/testthat.R} that contains:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{library(testthat)
 library(yourpackage)
 
 test_check("yourpackage")
-}
+}\if{html}{\out{</div>}}
 }
 
 \section{Special files}{
 
-There are two types of \code{.R} file that have special behaviour:
+Certain \code{.R} files have special significance in testthat:
 \itemize{
 \item Test files start with \code{test} and are executed in alphabetical order.
 \item Setup files start with \code{setup} and are executed before tests. If
 clean up is needed after all tests have been run, you can use
 \code{withr::defer(clean_up(), teardown_env())}. See \code{vignette("test-fixtures")}
 for more details.
+\item Helper files start with \code{helper} and are executed before tests are
+run and, unlike setup files, are also loaded by \code{devtools::load_all()}.
+Helper files can be necessary for side-effect-y code that you need to run
+when developing the package interactively. It's certainly possible to
+define custom test utilities in a helper file, but they can usually be
+defined below \verb{R/}, just like any other internal function.
 }
 
-There are two other types of special file that we no longer recommend using:
+There is another type of special file that we no longer recommend using:
 \itemize{
-\item Helper files start with \code{helper} and are executed before tests are
-run. They're also loaded by \code{devtools::load_all()}, so there's no
-real point to them and you should just put your helper code in \verb{R/}.
 \item Teardown files start with \code{teardown} and are executed after the tests
-are run. Now we recommend interleave setup and cleanup code in \verb{setup-}
+are run. Now we recommend interleaving setup and cleanup code in \verb{setup-}
 files, making it easier to check that you automatically clean up every
 mess that you make.
 }

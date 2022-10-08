@@ -63,6 +63,16 @@ test_that("can capture error/warning messages", {
   expect_snapshot_warning(warning("This is a warning"))
 })
 
+test_that("snapshot captures deprecations", {
+  foo <- function() {
+    lifecycle::deprecate_warn("1.0.0", "foo()")
+  }
+
+  expect_snapshot(foo())
+  expect_snapshot_warning(foo())
+  expect_snapshot_warning(foo(), class = "lifecycle_warning_deprecated")
+})
+
 test_that("can check error/warning classes", {
   expect_snapshot(expect_snapshot_error(1), error = TRUE)
   expect_snapshot(expect_snapshot_error(1, class = "myerror"), error = TRUE)
@@ -184,10 +194,10 @@ test_that("errors and warnings are folded", {
 })
 
 test_that("hint is informative", {
-  withr::local_options(cli.hyperlink = TRUE)
+  local_reproducible_output(crayon = TRUE, hyperlinks = TRUE, rstudio = TRUE)
 
   expect_snapshot({
-    cat(snapshot_accept_hint("_default", "bar.R"))
-    cat(snapshot_accept_hint("foo", "bar.R"))
+    cat(snapshot_accept_hint("_default", "bar.R", reset_output = FALSE))
+    cat(snapshot_accept_hint("foo", "bar.R", reset_output = FALSE))
   })
 })
