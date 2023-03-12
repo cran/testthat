@@ -1,3 +1,12 @@
+# testthat 3.1.7
+
+* `expect_setequal()` gives more actionable feedback (#1657).
+
+* `expect_snapshot()` no longer elides new lines when run interactively (#1726).
+
+* Experimental new `with_mocked_bindings()` and `local_mocked_bindings()` 
+  (#1739).
+
 # testthat 3.1.6
 
 * The embedded version of Catch no longer uses `sprintf()`.

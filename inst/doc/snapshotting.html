@@ -402,7 +402,7 @@ in the output, like in my first interactive example).</p></li>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expect_snapshot</span>(<span class="fu">cat</span>(<span class="fu">bullets</span>(<span class="st">&quot;a&quot;</span>)))</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expect_snapshot</span>(<span class="fu">cat</span>(<span class="fu">bullets</span>(<span class="st">&quot;a&quot;</span>, <span class="st">&quot;b&quot;</span>)))</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ── Warning (&#39;&lt;text&gt;:2&#39;): bullets ───────────────────────────────────────────────</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ── Warning (&#39;&lt;text&gt;:2:3&#39;): bullets ─────────────────────────────────────────────</span></span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Adding new snapshot:</span></span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Code</span></span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   cat(bullets(&quot;a&quot;))</span></span>
@@ -411,7 +411,7 @@ in the output, like in my first interactive example).</p></li>
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     &lt;li&gt;a&lt;/li&gt;</span></span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;/ul&gt;</span></span>
 <span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ── Warning (&#39;&lt;text&gt;:3&#39;): bullets ───────────────────────────────────────────────</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ── Warning (&#39;&lt;text&gt;:3:3&#39;): bullets ─────────────────────────────────────────────</span></span>
 <span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Adding new snapshot:</span></span>
 <span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Code</span></span>
 <span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   cat(bullets(&quot;a&quot;, &quot;b&quot;))</span></span>
@@ -446,7 +446,7 @@ the test will fail:</p>
 <span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expect_snapshot</span>(<span class="fu">cat</span>(<span class="fu">bullets</span>(<span class="st">&quot;a&quot;</span>)))</span>
 <span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expect_snapshot</span>(<span class="fu">cat</span>(<span class="fu">bullets</span>(<span class="st">&quot;a&quot;</span>, <span class="st">&quot;b&quot;</span>)))</span>
 <span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ── Failure (&#39;&lt;text&gt;:9&#39;): bullets ───────────────────────────────────────────────</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ── Failure (&#39;&lt;text&gt;:9:3&#39;): bullets ─────────────────────────────────────────────</span></span>
 <span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Snapshot of code has changed:</span></span>
 <span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; `old[2:6]`: &quot;  cat(bullets(\&quot;a\&quot;))&quot; &quot;Output&quot; &quot;  &lt;ul&gt;&quot; &quot;    &lt;li&gt;a&lt;/li&gt;&quot; &quot;  &lt;/ul&gt;&quot;</span></span>
 <span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; `new[2:6]`: &quot;  cat(bullets(\&quot;a\&quot;))&quot; &quot;Output&quot; &quot;  &lt;ul&gt;&quot; &quot;  &lt;li&gt;a&lt;/li&gt;&quot;   &quot;  &lt;/ul&gt;&quot;</span></span>
@@ -454,7 +454,7 @@ the test will fail:</p>
 <span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; * Run `testthat::snapshot_accept(&#39;snapshotting.Rmd&#39;)` to accept the change.</span></span>
 <span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; * Run `testthat::snapshot_review(&#39;snapshotting.Rmd&#39;)` to interactively review the change.</span></span>
 <span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ── Failure (&#39;&lt;text&gt;:10&#39;): bullets ──────────────────────────────────────────────</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ── Failure (&#39;&lt;text&gt;:10:3&#39;): bullets ────────────────────────────────────────────</span></span>
 <span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Snapshot of code has changed:</span></span>
 <span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     old                            | new                               </span></span>
 <span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [2] &quot;  cat(bullets(\&quot;a\&quot;, \&quot;b\&quot;))&quot; | &quot;  cat(bullets(\&quot;a\&quot;, \&quot;b\&quot;))&quot; [2]</span></span>
@@ -519,7 +519,7 @@ output, a message, and a warning:</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">test_that</span>(<span class="st">&quot;f() makes lots of noise&quot;</span>, {</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expect_snapshot</span>(<span class="fu">f</span>())</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ── Warning (&#39;&lt;text&gt;:2&#39;): f() makes lots of noise ───────────────────────────────</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ── Warning (&#39;&lt;text&gt;:2:3&#39;): f() makes lots of noise ─────────────────────────────</span></span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Adding new snapshot:</span></span>
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Code</span></span>
 <span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   f()</span></span>
@@ -534,7 +534,7 @@ output, a message, and a warning:</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">test_that</span>(<span class="st">&quot;you can&#39;t add a number and a letter&quot;</span>, {</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expect_snapshot</span>(<span class="dv">1</span> <span class="sc">+</span> <span class="st">&quot;a&quot;</span>)</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ── Error (&#39;&lt;text&gt;:2&#39;): you can&#39;t add a number and a letter ─────────────────────</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ── Error (&#39;&lt;text&gt;:2:3&#39;): you can&#39;t add a number and a letter ───────────────────</span></span>
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; `1 + &quot;a&quot;` threw an unexpected error.</span></span>
 <span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Message: non-numeric argument to binary operator</span></span>
 <span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Class:   simpleError/error/condition</span></span>
@@ -546,7 +546,7 @@ specifically request it with <code>error = TRUE</code>:</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">test_that</span>(<span class="st">&quot;you can&#39;t add a number and a letter&quot;</span>, {</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expect_snapshot</span>(<span class="dv">1</span> <span class="sc">+</span> <span class="st">&quot;a&quot;</span>, <span class="at">error =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ── Warning (&#39;&lt;text&gt;:2&#39;): you can&#39;t add a number and a letter ───────────────────</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ── Warning (&#39;&lt;text&gt;:2:3&#39;): you can&#39;t add a number and a letter ─────────────────</span></span>
 <span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Adding new snapshot:</span></span>
 <span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Code</span></span>
 <span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   1 + &quot;a&quot;</span></span>
@@ -561,7 +561,7 @@ front so it’s a little more obvious:</p>
 <span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    mean <span class="sc">+</span> sum</span>
 <span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  })</span>
 <span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ── Warning (&#39;&lt;text&gt;:2&#39;): you can&#39;t add weird thngs ─────────────────────────────</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ── Warning (&#39;&lt;text&gt;:2:3&#39;): you can&#39;t add weird thngs ───────────────────────────</span></span>
 <span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Adding new snapshot:</span></span>
 <span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Code</span></span>
 <span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   1 + &quot;a&quot;</span></span>
@@ -589,7 +589,7 @@ human readability.</p>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">a =</span> <span class="fu">list</span>(<span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">10</span>), <span class="at">b =</span> <span class="fu">list</span>(<span class="st">&quot;elephant&quot;</span>, <span class="st">&quot;banana&quot;</span>))</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">expect_snapshot_value</span>(x)</span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>})</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ── Warning (&#39;&lt;text&gt;:3&#39;): can snapshot a simple list ────────────────────────────</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; ── Warning (&#39;&lt;text&gt;:3:3&#39;): can snapshot a simple list ──────────────────────────</span></span>
 <span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Adding new snapshot:</span></span>
 <span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; {</span></span>
 <span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &quot;a&quot;: [</span></span>

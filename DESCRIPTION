@@ -1,6 +1,6 @@
 Package: testthat
 Title: Unit Testing for R
-Version: 3.1.6
+Version: 3.1.7
 Authors@R: c(
     person("Hadley", "Wickham", , "hadley@rstudio.com", role = c("aut", "cre")),
     person("RStudio", role = c("cph", "fnd")),
@@ -26,12 +26,12 @@ Config/Needs/website: tidyverse/tidytemplate
 Config/testthat/edition: 3
 Config/testthat/start-first: watcher, parallel*
 Encoding: UTF-8
-RoxygenNote: 7.2.1.9000
+RoxygenNote: 7.2.3
 NeedsCompilation: yes
-Packaged: 2022-12-08 22:26:26 UTC; hadleywickham
+Packaged: 2023-03-02 14:10:06 UTC; hadleywickham
 Author: Hadley Wickham [aut, cre],
   RStudio [cph, fnd],
   R Core team [ctb] (Implementation of utils::recover())
 Maintainer: Hadley Wickham <hadley@rstudio.com>
 Repository: CRAN
-Date/Publication: 2022-12-09 23:40:02 UTC
+Date/Publication: 2023-03-12 15:40:02 UTC
