@@ -1,35 +1,13 @@
 #' Run all tests in a directory
 #'
+#' @description
 #' This function is the low-level workhorse that powers [test_local()] and
 #' [test_package()]. Generally, you should not call this function directly.
 #' In particular, you are responsible for ensuring that the functions to test
 #' are available in the test `env` (e.g. via `load_package`).
 #'
-#' @section Special files:
-#' Certain `.R` files have special significance in testthat:
-#'
-#' * Test files start with `test` and are executed in alphabetical order.
-#'
-#' * Setup files start with `setup` and are executed before tests. If
-#'   clean up is needed after all tests have been run, you can use
-#'   `withr::defer(clean_up(), teardown_env())`. See `vignette("test-fixtures")`
-#'   for more details.
-#'
-#' * Helper files start with `helper` and are executed before tests are
-#'   run and, unlike setup files, are also loaded by `devtools::load_all()`.
-#'   Helper files can be necessary for side-effect-y code that you need to run
-#'   when developing the package interactively. It's certainly possible to
-#'   define custom test utilities in a helper file, but they can usually be
-#'   defined below `R/`, just like any other internal function.
-#'
-#' There is another type of special file that we no longer recommend using:
-#'
-#' * Teardown files start with `teardown` and are executed after the tests
-#'   are run. Now we recommend interleaving setup and cleanup code in `setup-`
-#'   files, making it easier to check that you automatically clean up every
-#'   mess that you make.
-#'
-#' All other files are ignored by testthat.
+#' See `vignette("special-files")` to learn more about the conventions for test,
+#' helper, and setup files that testthat uses, and what you might use each for.
 #'
 #' @section Environments:
 #' Each test is run in a clean environment to keep tests as isolated as
@@ -45,7 +23,6 @@
 #' @param env Environment in which to execute the tests. Expert use only.
 #' @param ... Additional arguments passed to [grepl()] to control filtering.
 #' @param load_helpers Source helper files before running the tests?
-#'   See [source_test_helpers()] for more details.
 #' @param stop_on_failure If `TRUE`, throw an error if any tests fail.
 #' @param stop_on_warning If `TRUE`, throw an error if any tests generate
 #'   warnings.
@@ -126,10 +103,9 @@ test_dir <- function(path,
 #' Run all tests in a single file
 #'
 #' Helper, setup, and teardown files located in the same directory as the
-#' test will also be run.
+#' test will also be run. See `vignette("special-files")` for details.
 #'
 #' @inherit test_dir return params
-#' @inheritSection test_dir Special files
 #' @inheritSection test_dir Environments
 #' @param path Path to file.
 #' @param ... Additional parameters passed on to `test_dir()`
@@ -214,6 +190,9 @@ test_files_serial <- function(test_dir,
                        load_package = c("none", "installed", "source")) {
 
   env <- test_files_setup_env(test_package, test_dir, load_package, env)
+  # record testing env for mocks
+  local_bindings(current_test_env = env, .env = testthat_env)
+
   test_files_setup_state(test_dir, test_package, load_helpers, env)
   reporters <- test_files_reporter(reporter)
 
@@ -275,23 +254,28 @@ find_load_all_args <- function(path) {
   )
 }
 
-test_files_setup_state <- function(test_dir, test_package, load_helpers, env, .env = parent.frame()) {
-
+test_files_setup_state <- function(
+    test_dir,
+    test_package,
+    load_helpers,
+    env,
+    frame = parent.frame()
+) {
   # Define testing environment
-  local_test_directory(test_dir, test_package, .env = .env)
+  local_test_directory(test_dir, test_package, .env = frame)
   withr::local_options(
     topLevelEnvironment = env_parent(env),
-    .local_envir = .env
+    .local_envir = frame
   )
 
   # Load helpers, setup, and teardown (on exit)
-  local_teardown_env(.env)
+  local_teardown_env(frame)
   if (load_helpers) {
     source_test_helpers(".", env)
   }
   source_test_setup(".", env)
-  withr::defer(withr::deferred_run(teardown_env()), .env) # new school
-  withr::defer(source_test_teardown(".", env), .env)      # old school
+  withr::defer(withr::deferred_run(teardown_env()), frame) # new school
+  withr::defer(source_test_teardown(".", env), frame)      # old school
 }
 
 test_files_reporter <- function(reporter, .env = parent.frame()) {
@@ -323,7 +307,7 @@ test_one_file <- function(path, env = test_env(), wrap = TRUE) {
   on.exit(teardown_run(), add = TRUE)
 
   reporter$start_file(path)
-  source_file(path, child_env(env), wrap = wrap)
+  source_file(path, env(env), wrap = wrap)
   reporter$end_context_if_started()
   reporter$end_file()
 }
@@ -348,7 +332,7 @@ teardown_env <- function() {
 
 local_teardown_env <- function(env = parent.frame()) {
   old <- testthat_env$teardown_env
-  testthat_env$teardown_env <- child_env(emptyenv())
+  testthat_env$teardown_env <- env(emptyenv())
   withr::defer(testthat_env$teardown_env <- old, env)
 
   invisible()

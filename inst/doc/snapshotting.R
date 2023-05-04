@@ -100,3 +100,9 @@ test_that("can snapshot a simple list", {
   expect_snapshot_value(x)
 })
 
+## -----------------------------------------------------------------------------
+knitr::include_graphics("review-image.png")
+
+## -----------------------------------------------------------------------------
+knitr::include_graphics("review-text.png")
+
