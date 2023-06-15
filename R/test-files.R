@@ -191,7 +191,7 @@ test_files_serial <- function(test_dir,
 
   env <- test_files_setup_env(test_package, test_dir, load_package, env)
   # record testing env for mocks
-  local_bindings(current_test_env = env, .env = testthat_env)
+  local_testing_env(env)
 
   test_files_setup_state(test_dir, test_package, load_helpers, env)
   reporters <- test_files_reporter(reporter)
@@ -274,7 +274,6 @@ test_files_setup_state <- function(
     source_test_helpers(".", env)
   }
   source_test_setup(".", env)
-  withr::defer(withr::deferred_run(teardown_env()), frame) # new school
   withr::defer(source_test_teardown(".", env), frame)      # old school
 }
 
@@ -283,7 +282,7 @@ test_files_reporter <- function(reporter, .env = parent.frame()) {
   reporters <- list(
     find_reporter(reporter),
     lister, # track data
-    local_snapshotter("_snaps", fail_on_new = FALSE, .env = .env) # for snapshots
+    local_snapshotter("_snaps", fail_on_new = FALSE, .env = .env)
   )
   list(
     multi = MultiReporter$new(reporters = compact(reporters)),
@@ -323,19 +322,15 @@ test_one_file <- function(path, env = test_env(), wrap = TRUE) {
 #'
 #' @export
 teardown_env <- function() {
-  if (is.null(testthat_env$teardown_env)) {
+  if (is.null(the$teardown_env)) {
     abort("`teardown_env()` has not been initialized", .internal = TRUE)
   }
 
-  testthat_env$teardown_env
+  the$teardown_env
 }
 
-local_teardown_env <- function(env = parent.frame()) {
-  old <- testthat_env$teardown_env
-  testthat_env$teardown_env <- env(emptyenv())
-  withr::defer(testthat_env$teardown_env <- old, env)
-
-  invisible()
+local_teardown_env <- function(frame = parent.frame()) {
+  local_bindings(teardown_env = frame, .env = the, .frame = frame)
 }
 
 #' Find test files

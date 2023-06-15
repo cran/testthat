@@ -404,16 +404,16 @@ approach (which still works, but is no longer recommended) is to put
 teardown code in <code>tests/testthat/teardown.R</code>.</p>
 <p>Here’s a <code>setup.R</code> example from the reprex package, where
 we turn off clipboard and HTML preview functionality during testing:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>op <span class="ot">&lt;-</span> <span class="fu">options</span>(<span class="at">reprex.clipboard =</span> <span class="cn">FALSE</span>, <span class="at">reprex.html_preview =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>withr<span class="sc">::</span><span class="fu">defer</span>(<span class="fu">options</span>(op), <span class="fu">teardown_env</span>())</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>op <span class="ot">&lt;-</span> <span class="fu">options</span>(<span class="at">reprex.clipboard =</span> <span class="cn">FALSE</span>, <span class="at">reprex.html_preview =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>withr<span class="sc">::</span><span class="fu">defer</span>(<span class="fu">options</span>(op), <span class="fu">teardown_env</span>())</span></code></pre></div>
 <p>Since we are just modifying options here, we can be even more concise
 and use the pre-built function <code>withr::local_options()</code> and
 pass <code>teardown_env()</code> as the <code>.local_envir</code>:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>withr<span class="sc">::</span><span class="fu">local_options</span>(</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">reprex.clipboard =</span> <span class="cn">FALSE</span>, <span class="at">reprex.html_preview =</span> <span class="cn">FALSE</span>),</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">.local_envir =</span> <span class="fu">teardown_env</span>()</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>withr<span class="sc">::</span><span class="fu">local_options</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">reprex.clipboard =</span> <span class="cn">FALSE</span>, <span class="at">reprex.html_preview =</span> <span class="cn">FALSE</span>),</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="at">.local_envir =</span> <span class="fu">teardown_env</span>()</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>)</span></code></pre></div>
 <div id="teardown-files" class="section level3">
 <h3>Teardown files</h3>
 <p>Teardown files live in <code>tests/testhat/</code>, start with

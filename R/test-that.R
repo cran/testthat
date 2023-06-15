@@ -34,19 +34,9 @@
 #' })
 #' }
 test_that <- function(desc, code) {
-  if (!is.character(desc) || length(desc) != 1) {
-    abort("`desc` must be a string")
-  }
-
-  reporter <- get_reporter()
-  if (is.null(reporter)) {
-    reporter <- local_interactive_reporter()
-  }
-
-  local_test_context()
+  check_string(desc)
 
   code <- substitute(code)
-
   if (edition_get() >= 3) {
     if (!is_call(code, "{")) {
       warn(
@@ -56,14 +46,22 @@ test_that <- function(desc, code) {
     }
   }
 
-  test_code(desc, code, env = parent.frame(), reporter = reporter)
+  local_test_context()
+  test_code(
+    desc,
+    code,
+    env = parent.frame(),
+    default_reporter = local_interactive_reporter()
+  )
 }
 
 # Access error fields with `[[` rather than `$` because the
 # `$.Throwable` from the rJava package throws with unknown fields
-test_code <- function(test, code, env = test_env(), reporter = get_reporter(), skip_on_empty = TRUE) {
-  reporter <- reporter %||% StopReporter$new()
-  if (!is.null(test) && !is.null(reporter)) {
+test_code <- function(test, code, env, default_reporter, skip_on_empty = TRUE) {
+
+  reporter <- get_reporter() %||% default_reporter
+
+  if (!is.null(test)) {
     reporter$start_test(context = reporter$.context, test = test)
     on.exit(reporter$end_test(context = reporter$.context, test = test))
   }
@@ -194,6 +192,7 @@ test_code <- function(test, code, env = test_env(), reporter = get_reporter(), s
 
   withr::local_options(testthat_topenv = test_env)
 
+  before <- inspect_state()
   tryCatch(
     withCallingHandlers(
       {
@@ -213,7 +212,14 @@ test_code <- function(test, code, env = test_env(), reporter = get_reporter(), s
     # skip silently terminate code
     skip  = function(e) {}
   )
+  after <- inspect_state()
 
+  if (!is.null(test)) {
+    cnd <- testthat_state_condition(before, after, call = sys.call(-1))
+    if (!is.null(cnd)) {
+      register_expectation(cnd, 0)
+    }
+  }
 
   invisible(ok)
 }
