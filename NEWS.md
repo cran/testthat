@@ -1,3 +1,12 @@
+# testthat 3.1.10
+
+* Fix for upcoming R-devel release.
+
+* `testthat` now sets the `_R_CHECK_BROWSER_NONINTERACTIVE_` environment variable
+  when running tests. This should ensure that left-over `browser()` statements
+  will trigger an error if encountered while running tests. This functionality
+  is only enabled with R (>= 4.3.0). (#1825)
+
 # testthat 3.1.9
 
 * New `expect_contains()` and `expect_in()` that works similarly to 
@@ -39,7 +48,7 @@
 
 * `expect_error()`, `expect_warning()`, and `expect_message()` now correctly
   enforce that the condition is of the expected base class (e.g. error, 
-  warning, messsage) even when the `class` argument is used (#1168).
+  warning, message) even when the `class` argument is used (#1168).
 
 * `it()` now calls `local_test_context()` so that it behaves more
   similarly to `test_that()` (#1731), and is now exported so that you
@@ -481,7 +490,7 @@ Learn more in `vignette("third-edition")`.
 
 * Messages are no longer automatically silenced. Either use 
   `suppressMessages()` to hide unimportant messages, or
-  `expect_messsage()` to catch important messages (#1095).
+  `expect_message()` to catch important messages (#1095).
   
 * `setup()` and `teardown()` are deprecated in favour of test fixtures.
   See `vignette("test-fixtures")` for more details.
