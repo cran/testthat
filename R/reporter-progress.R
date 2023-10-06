@@ -103,7 +103,7 @@ ProgressReporter <- R6::R6Class("ProgressReporter",
         colourise(cli::symbol$tick, "success"), " | ",
         colourise("F", "failure"), " ",
         colourise("W", "warning"), " ",
-        colourise("S", "skip"), " ",
+        colourise(" S", "skip"), " ",
         colourise(" OK", "success"),
         " | ", "Context"
       )
@@ -143,9 +143,18 @@ ProgressReporter <- R6::R6Class("ProgressReporter",
 
       col_format <- function(n, type) {
         if (n == 0) {
-          " "
+          if (type == "skip") {
+            "  "
+          } else {
+            " "
+          }
         } else {
-          colourise(n, type)
+          if (type == "skip") {
+            colourise(sprintf("%2d", n), type)
+          } else {
+            colourise(n, type)
+          }
+
         }
       }
 
@@ -519,8 +528,7 @@ issue_header <- function(x, pad = FALSE) {
    type <- strpad(type, 7)
   }
 
-  loc <- expectation_location(x)
-  paste0(type, " (", loc, "): ", x$test)
+  paste0(type, expectation_location(x, " (", ")"), ": ", x$test)
 }
 
 issue_summary <- function(x, rule = FALSE) {

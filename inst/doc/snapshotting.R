@@ -1,4 +1,4 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -34,7 +34,7 @@ test_that("bullets", {
   expect_snapshot(cat(bullets("a", "b")))
 })
 
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 # Reset snapshot test
 snapper$end_file()
 snapper$start_file("snapshotting.Rmd", "test")
@@ -45,12 +45,12 @@ test_that("bullets", {
   expect_snapshot(cat(bullets("a", "b")))
 })
 
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 # Reset snapshot test
 snapper$end_file()
 snapper$start_file("snapshotting.Rmd", "test")
 
-## ---- error = TRUE------------------------------------------------------------
+## ----error = TRUE-------------------------------------------------------------
 bullets <- function(text, id = NULL) {
   paste0(
     "<ul", if (!is.null(id)) paste0(" id=\"", id, "\""), ">\n", 
@@ -75,7 +75,7 @@ test_that("f() makes lots of noise", {
   expect_snapshot(f())
 })
 
-## ---- error = TRUE------------------------------------------------------------
+## ----error = TRUE-------------------------------------------------------------
 test_that("you can't add a number and a letter", {
   expect_snapshot(1 + "a")
 })
@@ -86,7 +86,7 @@ test_that("you can't add a number and a letter", {
 })
 
 ## -----------------------------------------------------------------------------
-test_that("you can't add weird thngs", {
+test_that("you can't add weird things", {
   expect_snapshot(error = TRUE, {
     1 + "a"
     mtcars + iris

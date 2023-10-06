@@ -402,7 +402,7 @@ in the output, like in my first interactive example).</p></li>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="fu">expect_snapshot</span>(<span class="fu">cat</span>(<span class="fu">bullets</span>(<span class="st">&quot;a&quot;</span>)))</span>
 <span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="fu">expect_snapshot</span>(<span class="fu">cat</span>(<span class="fu">bullets</span>(<span class="st">&quot;a&quot;</span>, <span class="st">&quot;b&quot;</span>)))</span>
 <span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>})</span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt; -- Warning (&#39;&lt;text&gt;:2:3&#39;): bullets ---------------------------------------------</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt; -- Warning: bullets ------------------------------------------------------------</span></span>
 <span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co">#&gt; Adding new snapshot:</span></span>
 <span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co">#&gt; Code</span></span>
 <span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co">#&gt;   cat(bullets(&quot;a&quot;))</span></span>
@@ -411,7 +411,7 @@ in the output, like in my first interactive example).</p></li>
 <span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#&gt;     &lt;li&gt;a&lt;/li&gt;</span></span>
 <span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#&gt;   &lt;/ul&gt;</span></span>
 <span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt; -- Warning (&#39;&lt;text&gt;:3:3&#39;): bullets ---------------------------------------------</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt; -- Warning: bullets ------------------------------------------------------------</span></span>
 <span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt; Adding new snapshot:</span></span>
 <span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="co">#&gt; Code</span></span>
 <span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co">#&gt;   cat(bullets(&quot;a&quot;, &quot;b&quot;))</span></span>
@@ -446,7 +446,7 @@ the test will fail:</p>
 <span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>  <span class="fu">expect_snapshot</span>(<span class="fu">cat</span>(<span class="fu">bullets</span>(<span class="st">&quot;a&quot;</span>)))</span>
 <span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>  <span class="fu">expect_snapshot</span>(<span class="fu">cat</span>(<span class="fu">bullets</span>(<span class="st">&quot;a&quot;</span>, <span class="st">&quot;b&quot;</span>)))</span>
 <span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>})</span>
-<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co">#&gt; -- Failure (&#39;&lt;text&gt;:9:3&#39;): bullets ---------------------------------------------</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co">#&gt; -- Failure: bullets ------------------------------------------------------------</span></span>
 <span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a><span class="co">#&gt; Snapshot of code has changed:</span></span>
 <span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="co">#&gt;     old                 | new                    </span></span>
 <span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co">#&gt; [2]   cat(bullets(&quot;a&quot;)) |   cat(bullets(&quot;a&quot;)) [2]</span></span>
@@ -458,7 +458,7 @@ the test will fail:</p>
 <span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a><span class="co">#&gt; * Run `testthat::snapshot_accept(&#39;snapshotting.Rmd&#39;)` to accept the change.</span></span>
 <span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a><span class="co">#&gt; * Run `testthat::snapshot_review(&#39;snapshotting.Rmd&#39;)` to interactively review the change.</span></span>
 <span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a><span class="co">#&gt; -- Failure (&#39;&lt;text&gt;:10:3&#39;): bullets --------------------------------------------</span></span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a><span class="co">#&gt; -- Failure: bullets ------------------------------------------------------------</span></span>
 <span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a><span class="co">#&gt; Snapshot of code has changed:</span></span>
 <span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a><span class="co">#&gt;     old                      | new                         </span></span>
 <span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a><span class="co">#&gt; [2]   cat(bullets(&quot;a&quot;, &quot;b&quot;)) |   cat(bullets(&quot;a&quot;, &quot;b&quot;)) [2]</span></span>
@@ -469,7 +469,7 @@ the test will fail:</p>
 <span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a><span class="co">#&gt; * Run `testthat::snapshot_accept(&#39;snapshotting.Rmd&#39;)` to accept the change.</span></span>
 <span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a><span class="co">#&gt; * Run `testthat::snapshot_review(&#39;snapshotting.Rmd&#39;)` to interactively review the change.</span></span>
-<span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a><span class="co">#&gt; Error in `reporter$stop_if_needed()`:</span></span>
+<span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a><span class="co">#&gt; Error:</span></span>
 <span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a><span class="co">#&gt; ! Test failed</span></span></code></pre></div>
 <p>If this is a deliberate change, you can follow the advice in the
 message and update the snapshots for that file by running
@@ -523,26 +523,27 @@ output, a message, and a warning:</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">test_that</span>(<span class="st">&quot;f() makes lots of noise&quot;</span>, {</span>
 <span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  <span class="fu">expect_snapshot</span>(<span class="fu">f</span>())</span>
 <span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>})</span>
-<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="co">#&gt; -- Warning (&#39;&lt;text&gt;:2:3&#39;): f() makes lots of noise -----------------------------</span></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="co">#&gt; -- Warning: f() makes lots of noise --------------------------------------------</span></span>
 <span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="co">#&gt; Adding new snapshot:</span></span>
 <span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co">#&gt; Code</span></span>
 <span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="co">#&gt;   f()</span></span>
 <span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="co">#&gt; Output</span></span>
 <span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a><span class="co">#&gt;   [1] &quot;Hello&quot;</span></span>
-<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a><span class="co">#&gt; Message &lt;simpleMessage&gt;</span></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a><span class="co">#&gt; Message</span></span>
 <span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a><span class="co">#&gt;   Hi!</span></span>
-<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a><span class="co">#&gt; Warning &lt;simpleWarning&gt;</span></span>
-<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a><span class="co">#&gt;   How are you?</span></span></code></pre></div>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a><span class="co">#&gt; Condition</span></span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a><span class="co">#&gt;   Warning in `f()`:</span></span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a><span class="co">#&gt;   How are you?</span></span></code></pre></div>
 <p>Capturing errors is <em>slightly</em> more difficult because
 <code>expect_snapshot()</code> will fail when there’s an error:</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">test_that</span>(<span class="st">&quot;you can&#39;t add a number and a letter&quot;</span>, {</span>
 <span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>  <span class="fu">expect_snapshot</span>(<span class="dv">1</span> <span class="sc">+</span> <span class="st">&quot;a&quot;</span>)</span>
 <span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>})</span>
-<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="co">#&gt; -- Error (&#39;&lt;text&gt;:2:3&#39;): you can&#39;t add a number and a letter -------------------</span></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="co">#&gt; -- Error: you can&#39;t add a number and a letter ----------------------------------</span></span>
 <span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="co">#&gt; `1 + &quot;a&quot;` threw an unexpected error.</span></span>
 <span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="co">#&gt; Message: non-numeric argument to binary operator</span></span>
 <span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="co">#&gt; Class:   simpleError/error/condition</span></span>
-<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a><span class="co">#&gt; Error in `reporter$stop_if_needed()`:</span></span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a><span class="co">#&gt; Error:</span></span>
 <span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a><span class="co">#&gt; ! Test failed</span></span></code></pre></div>
 <p>This is a safety valve that ensures that you don’t accidentally write
 broken code. To deliberately snapshot an error, you’ll have to
@@ -550,35 +551,39 @@ specifically request it with <code>error = TRUE</code>:</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="fu">test_that</span>(<span class="st">&quot;you can&#39;t add a number and a letter&quot;</span>, {</span>
 <span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>  <span class="fu">expect_snapshot</span>(<span class="dv">1</span> <span class="sc">+</span> <span class="st">&quot;a&quot;</span>, <span class="at">error =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>})</span>
-<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co">#&gt; -- Warning (&#39;&lt;text&gt;:2:3&#39;): you can&#39;t add a number and a letter -----------------</span></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co">#&gt; -- Warning: you can&#39;t add a number and a letter --------------------------------</span></span>
 <span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="co">#&gt; Adding new snapshot:</span></span>
 <span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="co">#&gt; Code</span></span>
 <span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="co">#&gt;   1 + &quot;a&quot;</span></span>
-<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a><span class="co">#&gt; Error &lt;simpleError&gt;</span></span>
-<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a><span class="co">#&gt;   non-numeric argument to binary operator</span></span></code></pre></div>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a><span class="co">#&gt; Condition</span></span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a><span class="co">#&gt;   Error in `1 + &quot;a&quot;`:</span></span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a><span class="co">#&gt;   ! non-numeric argument to binary operator</span></span></code></pre></div>
 <p>When the code gets longer, I like to put <code>error = TRUE</code> up
 front so it’s a little more obvious:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">test_that</span>(<span class="st">&quot;you can&#39;t add weird thngs&quot;</span>, {</span>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">test_that</span>(<span class="st">&quot;you can&#39;t add weird things&quot;</span>, {</span>
 <span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>  <span class="fu">expect_snapshot</span>(<span class="at">error =</span> <span class="cn">TRUE</span>, {</span>
 <span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>    <span class="dv">1</span> <span class="sc">+</span> <span class="st">&quot;a&quot;</span></span>
 <span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>    mtcars <span class="sc">+</span> iris</span>
 <span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>    mean <span class="sc">+</span> sum</span>
 <span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>  })</span>
 <span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>})</span>
-<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a><span class="co">#&gt; -- Warning (&#39;&lt;text&gt;:2:3&#39;): you can&#39;t add weird thngs ---------------------------</span></span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a><span class="co">#&gt; -- Warning: you can&#39;t add weird things -----------------------------------------</span></span>
 <span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a><span class="co">#&gt; Adding new snapshot:</span></span>
 <span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a><span class="co">#&gt; Code</span></span>
 <span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a><span class="co">#&gt;   1 + &quot;a&quot;</span></span>
-<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a><span class="co">#&gt; Error &lt;simpleError&gt;</span></span>
-<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a><span class="co">#&gt;   non-numeric argument to binary operator</span></span>
-<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a><span class="co">#&gt; Code</span></span>
-<span id="cb12-15"><a href="#cb12-15" tabindex="-1"></a><span class="co">#&gt;   mtcars + iris</span></span>
-<span id="cb12-16"><a href="#cb12-16" tabindex="-1"></a><span class="co">#&gt; Error &lt;simpleError&gt;</span></span>
-<span id="cb12-17"><a href="#cb12-17" tabindex="-1"></a><span class="co">#&gt;   &#39;+&#39; only defined for equally-sized data frames</span></span>
-<span id="cb12-18"><a href="#cb12-18" tabindex="-1"></a><span class="co">#&gt; Code</span></span>
-<span id="cb12-19"><a href="#cb12-19" tabindex="-1"></a><span class="co">#&gt;   mean + sum</span></span>
-<span id="cb12-20"><a href="#cb12-20" tabindex="-1"></a><span class="co">#&gt; Error &lt;simpleError&gt;</span></span>
-<span id="cb12-21"><a href="#cb12-21" tabindex="-1"></a><span class="co">#&gt;   non-numeric argument to binary operator</span></span></code></pre></div>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a><span class="co">#&gt; Condition</span></span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a><span class="co">#&gt;   Error in `1 + &quot;a&quot;`:</span></span>
+<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a><span class="co">#&gt;   ! non-numeric argument to binary operator</span></span>
+<span id="cb12-15"><a href="#cb12-15" tabindex="-1"></a><span class="co">#&gt; Code</span></span>
+<span id="cb12-16"><a href="#cb12-16" tabindex="-1"></a><span class="co">#&gt;   mtcars + iris</span></span>
+<span id="cb12-17"><a href="#cb12-17" tabindex="-1"></a><span class="co">#&gt; Condition</span></span>
+<span id="cb12-18"><a href="#cb12-18" tabindex="-1"></a><span class="co">#&gt;   Error in `Ops.data.frame()`:</span></span>
+<span id="cb12-19"><a href="#cb12-19" tabindex="-1"></a><span class="co">#&gt;   ! &#39;+&#39; only defined for equally-sized data frames</span></span>
+<span id="cb12-20"><a href="#cb12-20" tabindex="-1"></a><span class="co">#&gt; Code</span></span>
+<span id="cb12-21"><a href="#cb12-21" tabindex="-1"></a><span class="co">#&gt;   mean + sum</span></span>
+<span id="cb12-22"><a href="#cb12-22" tabindex="-1"></a><span class="co">#&gt; Condition</span></span>
+<span id="cb12-23"><a href="#cb12-23" tabindex="-1"></a><span class="co">#&gt;   Error in `mean + sum`:</span></span>
+<span id="cb12-24"><a href="#cb12-24" tabindex="-1"></a><span class="co">#&gt;   ! non-numeric argument to binary operator</span></span></code></pre></div>
 </div>
 <div id="snapshotting-values" class="section level2">
 <h2>Snapshotting values</h2>
@@ -593,7 +598,7 @@ human readability.</p>
 <span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>  x <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">a =</span> <span class="fu">list</span>(<span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">10</span>), <span class="at">b =</span> <span class="fu">list</span>(<span class="st">&quot;elephant&quot;</span>, <span class="st">&quot;banana&quot;</span>))</span>
 <span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>  <span class="fu">expect_snapshot_value</span>(x)</span>
 <span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>})</span>
-<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a><span class="co">#&gt; -- Warning (&#39;&lt;text&gt;:3:3&#39;): can snapshot a simple list --------------------------</span></span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a><span class="co">#&gt; -- Warning: can snapshot a simple list -----------------------------------------</span></span>
 <span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a><span class="co">#&gt; Adding new snapshot:</span></span>
 <span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a><span class="co">#&gt; {</span></span>
 <span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a><span class="co">#&gt;   &quot;a&quot;: [</span></span>
@@ -659,7 +664,7 @@ attempts and why we believe the new approach is better.</p>
 <li><p>You have to supply a path where the output will be saved. This
 seems like a small issue, but thinking of a good name, and managing the
 difference between interactive and test-time paths introduces a
-suprising amount of friction.</p></li>
+surprising amount of friction.</p></li>
 <li><p>It always overwrites the previous result; automatically assuming
 that the changes are correct. That means you have to use it with git and
 it’s easy to accidentally accept unwanted changes.</p></li>

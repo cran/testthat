@@ -2,9 +2,15 @@
 % Please edit documentation in R/test-files.R
 \name{test_file}
 \alias{test_file}
-\title{Run all tests in a single file}
+\title{Run tests in a single file}
 \usage{
-test_file(path, reporter = default_compact_reporter(), package = NULL, ...)
+test_file(
+  path,
+  reporter = default_compact_reporter(),
+  desc = NULL,
+  package = NULL,
+  ...
+)
 }
 \arguments{
 \item{path}{Path to file.}
@@ -14,6 +20,9 @@ as a string (e.g. "summary") or as an R6 object
 (e.g. \code{SummaryReporter$new()}).
 
 See \link{Reporter} for more details and a list of built-in reporters.}
+
+\item{desc}{Optionally, supply a string here to run only a single
+test that has this \code{desc}ription.}
 
 \item{package}{If these tests belong to a package, the name of the package.}
 
@@ -29,13 +38,14 @@ test will also be run. See \code{vignette("special-files")} for details.
 \section{Environments}{
 
 Each test is run in a clean environment to keep tests as isolated as
-possible. For package tests, that environment that inherits from the
-package's namespace environment, so that tests can access internal functions
+possible. For package tests, that environment inherits from the package's
+namespace environment, so that tests can access internal functions
 and objects.
 }
 
 \examples{
 path <- testthat_example("success")
 test_file(path)
+test_file(path, desc = "some tests have warnings")
 test_file(path, reporter = "minimal")
 }

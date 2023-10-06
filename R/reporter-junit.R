@@ -111,8 +111,8 @@ JunitReporter <- R6::R6Class("JunitReporter",
       )
 
       first_line <- function(x) {
-        loc <- expectation_location(x)
-        paste0(strsplit(x$message, split = "\n")[[1]][1], " (", loc, ")")
+        loc <- expectation_location(x, " (", ")")
+        paste0(strsplit(x$message, split = "\n")[[1]][1], loc)
       }
 
       # add an extra XML child node if not a success
@@ -136,7 +136,7 @@ JunitReporter <- R6::R6Class("JunitReporter",
       if (is.character(self$out)) {
         xml2::write_xml(self$doc, self$out, format = TRUE)
       } else if (inherits(self$out, "connection")) {
-        file <- tempfile()
+        file <- withr::local_tempfile()
         xml2::write_xml(self$doc, file, format = TRUE)
         cat(brio::read_file(file), file = self$out)
       } else {
