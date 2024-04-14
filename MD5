@@ -1,4 +1,4 @@
-7a02630a3e38f7521fb5c44a3f697a8a *DESCRIPTION
+7ad03c426643c38668b5fe0673a9a970 *DESCRIPTION
 d0b909bd833cd58ea0430eda333b6447 *LICENSE
 98b8d9fa7a3c0f90c19158aa47ec85f1 *NAMESPACE
 b682a5016b2f64f2b8704f47aa54c3eb *NEWS.md
@@ -113,7 +113,7 @@ af81cec28b15f4d3eabd29e378b024ed *inst/doc/third-edition.Rmd
 1ece0759f60e98193d53545648d19146 *inst/examples/test-failure.R
 522cf134c79624117d579f2c4d18f42b *inst/examples/test-success.R
 543392950ccc39ed50ebf26c75de0910 *inst/include/testthat.h
-5058228172d50a29a234414c78b25399 *inst/include/testthat/testthat.h
+05f098fedb1fe85ee85de806f711779f *inst/include/testthat/testthat.h
 b5816f117a5460c67e3e08b1c23dacbc *inst/include/testthat/vendor/catch.h
 f481e7613929d4968a4a4c73031f7967 *inst/resources/catch-routine-registration.R
 f35a879e88834e75aee99fc9817547a0 *inst/resources/test-cpp.R
